@@ -34,7 +34,7 @@ import java.math.BigInteger;
 
 public final class StackManip implements IVmOperation {
     
-    public enum Operator { SWAP, DUP, OVER, ROT, DROP,
+    public enum Operator { LEN, SWAP, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP };
 
     public StackManip (Operator opr) {
@@ -44,6 +44,9 @@ public final class StackManip implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	try {
 	    switch (operator) {
+            case LEN:
+                len (vm);
+                break;
 	    case SWAP:
 		swap (vm);
 		break;
@@ -82,6 +85,10 @@ public final class StackManip implements IVmOperation {
     // Stack manipulation methods make separate at () and pop () 
     // calls to ensure that the stack will be in an unmodified state
     // even if there is an underflow exception.
+
+    private static void len (Vm vm) {
+        vm.pushInteger (vm.getDataStack ().size ());
+    }
 
     public static void swap (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.at (0);

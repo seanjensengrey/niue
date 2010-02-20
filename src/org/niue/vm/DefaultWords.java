@@ -67,6 +67,7 @@ final class DefaultWords {
             vmOperations.put (NEGATE, new Logical (Logical.Operator.NEGATE));
 
             // Stack manipulation
+            vmOperations.put (LEN, new StackManip (StackManip.Operator.LEN));
             vmOperations.put (SWAP, new StackManip (StackManip.Operator.SWAP));
             vmOperations.put (DUP, new StackManip (StackManip.Operator.DUP));
             vmOperations.put (OVER, new StackManip (StackManip.Operator.OVER));
@@ -122,6 +123,7 @@ final class DefaultWords {
     static final int NEGATE = "negate".hashCode ();
 
     // Stack manipulation
+    static final int LEN = "len".hashCode ();
     static final int SWAP = "swap".hashCode ();
     static final int DUP = "dup".hashCode ();
     static final int OVER = "over".hashCode ();
