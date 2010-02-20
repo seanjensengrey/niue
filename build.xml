@@ -1,0 +1,49 @@
+<!--
+   Usage: 
+   `ant' or `ant compile' - compile class files.
+   `ant jar' - compile and create the jar.
+   `ant clean' - removes the classes folder.
+  -->
+
+
+<project name="niue" default="compile">
+
+
+<!-- <splash imageurl="build.png"/> -->
+
+<!-- Paths -->
+
+<property name="src" location="./src"/>
+<property name="lib" location="./lib"/>
+<property name="classes" location="./classes"/>
+<property name="cobertura-instrumented-classes" 
+	  location="./cobertura-instrumented-classes"/>  
+<property name="build" location="./pub"/>  
+<property name="docs" location="./docs"/>  
+<property name="test" location="./tests"/>  
+<property name="jutest" location="./tests/junit"/>
+
+<path id="project.class.path">
+</path>
+
+<target name="compile" description="compile project">
+  <mkdir dir="${classes}"/>
+  <javac srcdir="${src}"
+      executable="javac"
+      failonerror="false"      
+      fork="true"
+      destdir="${classes}"
+      debug="on"
+      source="1.6">
+    <compilerarg value="-Xlint"/>
+    <classpath refid="project.class.path"/>
+  </javac>
+</target>
+
+<target name="clean" description="clean project">
+  <exec executable="rm"> 
+      <arg line='-rf ./classes' />
+  </exec>
+</target>
+
+</project>
