@@ -60,7 +60,7 @@ public final class Loop implements IVmOperation {
 	int incrementBy = 1;
 	if (type == Type.TIMES_BY)  {
 	    blockIndex = 2;
-	    DataStackElement i = vm.at (0);
+	    DataStackElement i = vm.at (1);
 	    if (i.getType () != ByteCode.Type.INTEGER) {
 		VmException.raiseUnexpectedValueOnStack ();
 	    }
