@@ -42,10 +42,14 @@ public final class Vm {
 	    vmStack.push (this);
     }
 
-    public Vm (Vm parent) {
+    public Vm (Vm parent, boolean newProc) {
 	initVmOperations ();
 	parentVm = parent;
-	dataStack = parentVm.dataStack;
+        if (newProc) {
+            dataStack = createFrom (parentVm.dataStack);
+        } else {
+            dataStack = parentVm.dataStack;
+        }
 	out = parent.out;
     }
 
@@ -144,6 +148,12 @@ public final class Vm {
     public void write (String s) {
 	if (out != null) {
 	    out.print (s);
+	}
+    }
+
+    public void writeLine (String s) {
+	if (out != null) {
+	    out.println (s);
 	}
     }
 
@@ -310,6 +320,18 @@ public final class Vm {
         return parentVm;
     }
 
+    public void spawn () {
+        Vm vm = new Vm (this, true);
+        if (procController == null || !procController.isAlive ()) {
+            procController = new ProcessController (this);
+        }
+        procController.add (vm);
+    }
+
+    public ByteCodes getByteCodes () {
+        return byteCodes;
+    }
+
     private boolean updateVar (int hc, DataStackElement var) {
 	boolean check = false;
 	if (parentVm == null) check = true;
@@ -444,7 +466,7 @@ public final class Vm {
     }
 
     private void blockStart () {
-	Vm currentVm = new Vm (this);
+	Vm currentVm = new Vm (this, false);
 	currentVm.setCompilationMode (true);
 	vmStack.push (currentVm);
     }
@@ -562,6 +584,15 @@ public final class Vm {
 	vmOperations = DefaultWords.getDefaultOperation ();
     }
 
+    private Stack<DataStackElement> createFrom (Stack<DataStackElement> stack) {
+        Stack<DataStackElement> s = new Stack<DataStackElement> ();
+        int sz = stack.size ();
+        for (int i = 0; i < sz; ++i) {
+            s.push (stack.elementAt (i));
+        }
+        return s;
+    }
+
     private VmState state = new VmState ();
     private boolean compilationMode = false;
     private ByteCodes byteCodes = null;
@@ -578,6 +609,7 @@ public final class Vm {
     private int childVmCount = 0;
     private Hashtable<Integer, DataStackElement> vars = 
 	new Hashtable<Integer, DataStackElement> ();
+    private ProcessController procController = null;
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();
