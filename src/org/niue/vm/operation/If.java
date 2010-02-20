@@ -46,7 +46,7 @@ public final class If implements IVmOperation {
 	}
 	DataStackElement block = vm.at (0);
 	ByteCode.Type type = block.getType ();
-	if (type != ByteCode.Type.VM && type != ByteCode.Type.WORD) {
+	if (type != ByteCode.Type.VM && type != ByteCode.Type.STRING) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
 	boolean exec = shouldExecute (c);
@@ -56,7 +56,6 @@ public final class If implements IVmOperation {
 	    if (type == ByteCode.Type.VM) {
 		vm.runChildVm (block.getElement (), true);
 	    } else {
-		// Support for WORD is not currently implemented.
 		vm.executeWord (block.getElement ());
 	    }
 	}

@@ -68,7 +68,7 @@ public final class Loop implements IVmOperation {
 	}
 	DataStackElement block = vm.at (blockIndex);
 	ByteCode.Type tp = block.getType ();
-	if (tp != ByteCode.Type.VM && tp != ByteCode.Type.WORD) {
+	if (tp != ByteCode.Type.VM && tp != ByteCode.Type.STRING) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
 
@@ -90,7 +90,6 @@ public final class Loop implements IVmOperation {
 		vm.discardChildVm (id);
 	    }
 	} else {
-	    // Support for WORD is not currently implemented.
 	    for (int i = 0; i < t; i += incrementBy) {
 		vm.pushInteger (i);
 		vm.executeWord (id);		
@@ -101,7 +100,7 @@ public final class Loop implements IVmOperation {
     private void whileLoop (Vm vm) throws VmException {
 	DataStackElement block = vm.at (0);
 	ByteCode.Type type = block.getType ();
-	if (type != ByteCode.Type.VM && type != ByteCode.Type.WORD) {
+	if (type != ByteCode.Type.VM && type != ByteCode.Type.STRING) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
 	boolean exec = shouldExecute (vm.at (1));
@@ -121,7 +120,6 @@ public final class Loop implements IVmOperation {
 		    vm.discardChildVm (id);
 		}
 	    } else {
-		// Support for WORD is not currently implemented.
 		while (exec) {
 		    vm.executeWord (id);
 		    exec = shouldExecute (vm.pop ());
@@ -132,7 +130,8 @@ public final class Loop implements IVmOperation {
 
     private boolean shouldExecute (DataStackElement c) 
 	throws VmException {
-	if (c.getType () != ByteCode.Type.BOOLEAN) {
+        ByteCode.Type t = c.getType ();
+	if (t != ByteCode.Type.BOOLEAN) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
 	return (c.getElement () == 1);

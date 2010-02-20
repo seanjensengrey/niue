@@ -1,0 +1,16 @@
+'count 0 ;
+'check-count [ count 5 < ] ;
+'print-and-count [ count . 'count count 1 + ; check-count ] ;
+check-count 'print-and-count while
+
+0 [ + ] 10 times ( leaves 45 on stack ) . 
+
+newline
+
+'say-hello [ ( discard the counter ) , "hello, world" . ] ;
+'say-hello 5 times
+
+newline
+
+[ ( discard the counter ) , 'hi . ] 5 times
+

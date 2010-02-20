@@ -41,6 +41,7 @@ public final class Niue {
 		    vm.execute (token.trim());		
 		}
 	    } catch (VmException ex) {
+                // ex.printStackTrace ();
 		System.out.println (ex.getMessage ());
 	    }
 	    if (vm.isStopped ()) {
