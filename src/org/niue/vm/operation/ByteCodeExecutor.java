@@ -41,8 +41,9 @@ public final class ByteCodeExecutor implements IVmOperation {
 	ByteCode bc = null;
 	try {
 	    int i = 0;
-	    while ((bc = byteCodes.at (i++)) != null) {
+	    while ((bc = byteCodes.at (i)) != null) {
 		vm.executeByteCode (bc);
+                ++i;
 	    }
 	} catch (VmException ex) {
 	    throw ex;

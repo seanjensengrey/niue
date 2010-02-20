@@ -25,8 +25,10 @@
 
 package org.niue.vm;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class ProcessController extends Thread {
 
@@ -34,60 +36,52 @@ public final class ProcessController extends Thread {
         this.parent = parent;
     }
 
-    class VmMap {
-        int byteCodeIndex = 0;
-        Vm vm = null;
-
-        VmMap (Vm vm) {
-            this.vm = vm;
-        }
-
-        boolean isDone () {
-            return (byteCodeIndex >= vm.getByteCodes ().size ());
-        }
-    }
-    
-    public void add (Vm vm) {
-        vms.add (new VmMap (vm));
+    public int add (Vm vm) {
+        if (procId >= (Integer.MAX_VALUE - 1)) procId = 0;
+        ++procId;
+        vms.add (vm);
         if (!started) {
             this.start ();
             started = true;
         }
+        return procId;
     }
 
     public void run () {
-        Iterator<VmMap> iter = vms.iterator ();
-        int idx = 0;
-        while (!vms.isEmpty ()) {
-            VmMap vmMap = iter.next ();
-            ++idx;
-            runVm (vmMap);
-            if (vmMap.isDone ()) {
-                vms.remove (idx - 1);
-                iter = vms.iterator ();
-                idx = 0;
-            }
+        executors = Executors.newCachedThreadPool ();
+        Vm vm = null;
+        while ((vm = vms.poll ()) != null) {
+            executors.execute (new ExecuteVm (vm));
         }
     }
 
-    private void runVm (VmMap vmMap) {
-        Vm vm = vmMap.vm;
-        ByteCodes byteCodes = vm.getByteCodes ();
-        for (int i = 0; i < BYTE_CODES_TO_RUN; ++i) {
-            if (!vmMap.isDone ()) {
-                // TODO: Handle a blocked vm.
-                try {
-                    vm.executeByteCode (byteCodes.at (vmMap.byteCodeIndex++));
-                } catch (VmException ex) {
-                    parent.writeLine (ex.getMessage () + " in process " + vm);
-                }                                         
+    public void shutdown () {
+        if (executors != null)
+            executors.shutdownNow ();
+    }
+    
+    public class ExecuteVm implements Runnable {
+        ExecuteVm (Vm vm) {
+            this.vm = vm;
+        }
+
+        public void run () {
+            try {
+                vm.run ();
+            } catch (VmException ex) {
+                parent.writeLine (ex.getMessage () + " in process " + vm);
+            } catch (Exception ex) { 
             }
         }
+
+        private Vm vm = null;
     }
 
     private Vm parent = null;
     private boolean started = false;
-    private ArrayList<VmMap> vms = new ArrayList<VmMap> ();
+    private LinkedList<Vm> vms = new LinkedList<Vm> ();
+    private int procId = 0;
+    private ExecutorService executors = null;
     private static final int BYTE_CODES_TO_RUN = 10;
 }
 

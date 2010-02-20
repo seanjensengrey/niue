@@ -1,0 +1,2 @@
+[ [ 'one . 5000 sleep ] 100 times ] spawn
+[ [ 'two . 500 sleep ] 100 times ] spawn

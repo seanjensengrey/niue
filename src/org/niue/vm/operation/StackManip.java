@@ -35,7 +35,7 @@ import java.math.BigInteger;
 public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, DUP, OVER, ROT, DROP,
-	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP };
+	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -74,6 +74,9 @@ public final class StackManip implements IVmOperation {
 	    case TWO_DROP:
 		twoDrop (vm);
 		break;
+            case PUSH_SYNC:
+                pushSync (vm);
+                break;
 	    }
 	} catch (VmException ex) {
 	    throw ex;
@@ -153,6 +156,10 @@ public final class StackManip implements IVmOperation {
     private void twoDrop (Vm vm) throws VmException {
 	vm.pop ();
 	vm.pop ();
+    }
+
+    private void pushSync (Vm vm) throws VmException {
+        throw new VmException ("pushSync not implemented.");
     }
 
     private Operator operator;

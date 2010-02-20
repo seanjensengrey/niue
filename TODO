@@ -1,2 +1,3 @@
 
- * Test conditionals, loops.
+ * Implement pushSync in StackManip. The stack will take an integer and a value. The value is
+   pushed to the stack of the VM identified by the integer using a synchronous operation.

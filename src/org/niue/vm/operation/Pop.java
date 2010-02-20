@@ -32,16 +32,16 @@ import org.niue.vm.DataStackElement;
 
 public final class Pop implements IVmOperation {
     
-    public Pop (boolean print) {
-	this.print = print;
+    public Pop (boolean p) {
+        print = p;
     }
 
     public void execute (Vm vm) throws VmException {
 	DataStackElement elem = vm.pop ();
-	if (print) {
-	    vm.write (vm.getDataStackElementValue (elem) + ' ');        
-	}
+        if (print) {
+            vm.write (vm.getDataStackElementValue (elem) + ' ');        
+        }
     }
-
+    
     private boolean print = false;
 }

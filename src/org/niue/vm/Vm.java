@@ -42,14 +42,10 @@ public final class Vm {
 	    vmStack.push (this);
     }
 
-    public Vm (Vm parent, boolean newProc) {
+    public Vm (Vm parent) {
 	initVmOperations ();
 	parentVm = parent;
-        if (newProc) {
-            dataStack = createFrom (parentVm.dataStack);
-        } else {
-            dataStack = parentVm.dataStack;
-        }
+        dataStack = parentVm.dataStack;
 	out = parent.out;
     }
 
@@ -163,7 +159,7 @@ public final class Vm {
 	}
     }
 
-    public void stop () {
+    public void stop () {        
 	cleanup ();
 	state.stopped = true;
     }
@@ -320,12 +316,13 @@ public final class Vm {
         return parentVm;
     }
 
-    public void spawn () {
-        Vm vm = new Vm (this, true);
+    public void spawn (int vmId) {
+	Vm vm = vmTable.get (vmId);
+        vm.dataStack = createFrom (this.dataStack);
         if (procController == null || !procController.isAlive ()) {
             procController = new ProcessController (this);
         }
-        procController.add (vm);
+        pushInteger (procController.add (vm));
     }
 
     public ByteCodes getByteCodes () {
@@ -372,6 +369,7 @@ public final class Vm {
     }
 
     private void cleanup () {
+        stopProcessController ();
 	dataStack = null;
 	vars.clear ();
 	vars = null;	
@@ -381,6 +379,16 @@ public final class Vm {
 	numberTable = null;
 	vmTable.clear ();
 	vmTable = null;
+    }
+
+    private void stopProcessController () {
+        if (procController != null && procController.isAlive ()) {
+            procController.shutdown ();
+            try {
+                procController.yield ();
+                procController.join (10);
+            } catch (InterruptedException ex) { }
+        }
     }
 
     private void push (int hc, ByteCode.Type type) {
@@ -466,7 +474,7 @@ public final class Vm {
     }
 
     private void blockStart () {
-	Vm currentVm = new Vm (this, false);
+	Vm currentVm = new Vm (this);
 	currentVm.setCompilationMode (true);
 	vmStack.push (currentVm);
     }
@@ -532,7 +540,7 @@ public final class Vm {
     }
 
     private int internVm (Vm vm) {
-	if (childVmCount >= Integer.MAX_VALUE)
+	if (childVmCount >= (Integer.MAX_VALUE - 1))
 	    childVmCount = 0;
 	int hc = childVmCount++;
 	vmTable.put (hc, vm);
@@ -584,7 +592,7 @@ public final class Vm {
 	vmOperations = DefaultWords.getDefaultOperation ();
     }
 
-    private Stack<DataStackElement> createFrom (Stack<DataStackElement> stack) {
+    private static Stack<DataStackElement> createFrom (Stack<DataStackElement> stack) {
         Stack<DataStackElement> s = new Stack<DataStackElement> ();
         int sz = stack.size ();
         for (int i = 0; i < sz; ++i) {
