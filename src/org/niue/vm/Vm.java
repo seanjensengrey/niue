@@ -116,7 +116,13 @@ public final class Vm {
     }
 
     public void push (DataStackElement i) {
-	dataStack.push (i);
+        if (syncedPush) {
+            synchronized (this) {
+                dataStack.push (i);
+            }
+        } else {
+            dataStack.push (i);
+        }
     }
 
     public DataStackElement pop () throws VmException {
@@ -322,11 +328,83 @@ public final class Vm {
         if (procController == null || !procController.isAlive ()) {
             procController = new ProcessController (this);
         }
-        pushInteger (procController.add (vm));
+        int procId = procController.add (vm);
+        addProcess (procId, vm);
+        pushInteger (procId);
     }
 
     public ByteCodes getByteCodes () {
         return byteCodes;
+    }
+
+    public Vm getProcess (int procId) {
+        if (procId == 0) {
+            return getRootProcess ();
+        } else {
+            if (processTable.get (procId) == null) {
+                if (parentVm != null) {
+                    return parentVm.getProcess (procId);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeProcess (int procId) {
+        if (processTable != null) {
+            synchronized (this) {
+                if (processTable.remove (procId) == null) {
+                    if (parentVm != null) {
+                        parentVm.removeProcess (procId);
+                    }
+                }
+            }
+        }
+    }
+
+    public void setProcId (int pid) {
+        procId = pid;
+    }
+
+    public int getProcId () {
+        return procId;
+    }
+
+    public void setTempDataStack (Stack<DataStackElement> stack) {
+        if (stack == null) {
+            dataStack = oldDataStack;
+            oldDataStack = null;
+        } else {
+            oldDataStack = dataStack;
+            dataStack = stack;
+        }
+    }
+
+    public void setSyncedPush (boolean b) {
+        syncedPush = b;
+    }
+
+    public int getPushingInto () {
+        return pushingInto;
+    }
+
+    public void setPushingInto (int i) {
+        pushingInto = i;
+    }
+
+    private Vm getRootProcess () {
+        if (parentVm == null) {
+            return this;
+        } else {
+            return parentVm.getRootProcess ();
+        }
+    }
+
+    private void addProcess (int procId, Vm vm) {
+        if (processTable == null) {
+            processTable = new Hashtable<Integer, Vm> ();
+        }
+        processTable.put (procId, vm);
     }
 
     private boolean updateVar (int hc, DataStackElement var) {
@@ -605,6 +683,9 @@ public final class Vm {
     private boolean compilationMode = false;
     private ByteCodes byteCodes = null;
     private Stack<DataStackElement> dataStack = null;
+    private Stack<DataStackElement> oldDataStack = null;
+    private boolean syncedPush = false;
+    private int pushingInto = -1;
     private PrintStream out = null;
     private Hashtable<Integer, IVmOperation> vmOperations = null;
     private Hashtable<Integer, String> stringTable = 
@@ -618,6 +699,8 @@ public final class Vm {
     private Hashtable<Integer, DataStackElement> vars = 
 	new Hashtable<Integer, DataStackElement> ();
     private ProcessController procController = null;
+    private Hashtable<Integer, Vm> processTable = null;
+    private int procId = 0;
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();

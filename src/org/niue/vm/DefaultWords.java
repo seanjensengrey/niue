@@ -79,7 +79,8 @@ final class DefaultWords {
             vmOperations.put (TWO_DUP, new StackManip (StackManip.Operator.TWO_DUP));
             vmOperations.put (TWO_OVER, new StackManip (StackManip.Operator.TWO_OVER));
             vmOperations.put (TWO_DROP, new StackManip (StackManip.Operator.TWO_DROP));
-            vmOperations.put (PUSH_SYNC, new StackManip (StackManip.Operator.PUSH_SYNC));
+            vmOperations.put (PUSH_TO_PARENT, new StackManip (StackManip.Operator.PUSH_SYNC));
+            vmOperations.put (DONE_PUSH_TO_PARENT, new StackManip (StackManip.Operator.DONE_PUSH_SYNC));
 
 	    // Control flow
             vmOperations.put (IF_TRUE, new If (If.Cond.IF_TRUE));
@@ -138,7 +139,8 @@ final class DefaultWords {
     static final int TWO_DUP = "2dup".hashCode ();
     static final int TWO_OVER = "2over".hashCode ();
     static final int TWO_DROP = "2drop".hashCode ();
-    static final int PUSH_SYNC = "^".hashCode ();
+    static final int PUSH_TO_PARENT = "<<".hashCode ();
+    static final int DONE_PUSH_TO_PARENT = ">>".hashCode ();
 
     // Control flow
     static final int IF_TRUE = "if".hashCode ();

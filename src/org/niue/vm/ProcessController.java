@@ -39,6 +39,7 @@ public final class ProcessController extends Thread {
     public int add (Vm vm) {
         if (procId >= (Integer.MAX_VALUE - 1)) procId = 0;
         ++procId;
+        vm.setProcId (procId);
         vms.add (vm);
         if (!started) {
             this.start ();
@@ -71,7 +72,9 @@ public final class ProcessController extends Thread {
             } catch (VmException ex) {
                 parent.writeLine (ex.getMessage () + " in process " + vm);
             } catch (Exception ex) { 
+                parent.writeLine (ex.getMessage () + " in process " + vm);
             }
+            parent.removeProcess (vm.getProcId ());
         }
 
         private Vm vm = null;
@@ -79,9 +82,9 @@ public final class ProcessController extends Thread {
 
     private Vm parent = null;
     private boolean started = false;
-    private LinkedList<Vm> vms = new LinkedList<Vm> ();
-    private int procId = 0;
+    private LinkedList<Vm> vms = new LinkedList<Vm> ();    
     private ExecutorService executors = null;
+    private static int procId = 0;
     private static final int BYTE_CODES_TO_RUN = 10;
 }
 

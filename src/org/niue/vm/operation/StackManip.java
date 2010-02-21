@@ -35,7 +35,8 @@ import java.math.BigInteger;
 public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, DUP, OVER, ROT, DROP,
-	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC };
+	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC,
+            DONE_PUSH_SYNC };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -76,6 +77,9 @@ public final class StackManip implements IVmOperation {
 		break;
             case PUSH_SYNC:
                 pushSync (vm);
+                break;
+            case DONE_PUSH_SYNC:
+                donePushSync (vm);
                 break;
 	    }
 	} catch (VmException ex) {
@@ -159,7 +163,29 @@ public final class StackManip implements IVmOperation {
     }
 
     private void pushSync (Vm vm) throws VmException {
-        throw new VmException ("pushSync not implemented.");
+        if (vm.getPushingInto () != -1) {
+            throw new VmException ("Already pushing data to another process.");
+        }
+        DataStackElement procId = vm.pop ();
+        if (procId.getType () != ByteCode.Type.INTEGER) {
+            VmException.raiseUnexpectedValueOnStack ();
+        }
+        int pid = procId.getElement ();
+        Vm targetVm = vm.getProcess (pid);
+        if (targetVm == null) {
+            throw new VmException ("Invalid process id.");
+        }
+        vm.setPushingInto (pid);
+        targetVm.setSyncedPush (true);
+        vm.setTempDataStack (targetVm.getDataStack ());
+    }
+
+    private void donePushSync (Vm vm) throws VmException {
+        int pid = vm.getPushingInto ();
+        Vm targetVm = vm.getProcess (pid);
+        targetVm.setSyncedPush (false);
+        vm.setPushingInto (-1);
+        vm.setTempDataStack (null);
     }
 
     private Operator operator;
