@@ -28,6 +28,10 @@ package org.niue;
 import java.io.InputStream;
 import java.io.IOException;
 
+// Parses an input stream into tokens of strings.  Space is the
+// default delimitter.  Knows to parse quoted strings and comments
+// enclosed in ( and ).
+
 public final class Reader {
     public Reader (InputStream in) {
         this.in = in;

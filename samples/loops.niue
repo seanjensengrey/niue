@@ -1,6 +1,6 @@
-'count 0 ;
-'check-count [ count 5 < ] ;
-'print-and-count [ count . 'count count 1 + ; check-count ] ;
+0 'count ;
+[ count 5 < ] 'check-count ;
+[ count . count 1 + 'count ; check-count ] 'print-and-count ;
 check-count 'print-and-count while
 
 0 [ + ] 10 times ( leaves 45 on stack ) . 
@@ -8,7 +8,7 @@ check-count 'print-and-count while
 
 newline
 
-'say-hello [ ( discard the counter ) , "hello, world" . ] ;
+[ ( discard the counter ) , "hello, world" . ] 'say-hello ;
 'say-hello 5 times
 
 newline

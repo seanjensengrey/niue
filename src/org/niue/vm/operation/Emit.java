@@ -32,7 +32,7 @@ import org.niue.vm.VmException;
 public final class Emit implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	char c[] = new char[1];
-	c[0] = (char) vm.popNumber ();
+	c[0] = (char) vm.popInteger ();
 	vm.write (new String (c));
     }
 }

@@ -166,11 +166,7 @@ public final class StackManip implements IVmOperation {
         if (vm.getPushingInto () != -1) {
             throw new VmException ("Already pushing data to another process.");
         }
-        DataStackElement procId = vm.pop ();
-        if (procId.getType () != ByteCode.Type.INTEGER) {
-            VmException.raiseUnexpectedValueOnStack ();
-        }
-        int pid = procId.getElement ();
+        int pid = vm.popInteger ();
         Vm targetVm = vm.getProcess (pid);
         if (targetVm == null) {
             throw new VmException ("Invalid process id.");

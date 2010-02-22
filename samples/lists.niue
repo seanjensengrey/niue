@@ -1,0 +1,9 @@
+( a lisp like map function ) 
+[ 'opr ; [ , opr ! ]  len 1 - times ] 'map ;
+
+( using map to find the sum of an integer list )
+0 'sum ; ( sum is accumulated here )
+[ sum + 'sum ; ] 'add-sum ; ( add-sum is passed to map )
+1 2 3 4 5 'add-sum map
+sum ( sum will be now 15 )
+

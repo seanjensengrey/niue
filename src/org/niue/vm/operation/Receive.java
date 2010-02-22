@@ -25,21 +25,24 @@
 
 package org.niue.vm.operation;
 
+import java.util.Stack;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
-import org.niue.vm.ByteCode;
 
-public final class DefVar implements IVmOperation {
+public final class Receive implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
-	DataStackElement name = vm.pop ();
-	DataStackElement var = vm.pop ();
-	if (name.getType () != ByteCode.Type.STRING) {
-	    throw new VmException ("Name must be a string.");
+	int count = vm.popInteger ();
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	while (dataStack.size () < count) {	    
+	    try {
+		Thread.sleep (10);
+	    } catch (InterruptedException ex) {
+		throw new VmException ("Error while waiting for " +
+				       "data to arrive on stack");
+	    }
 	}
-	vm.putVar (vm.getDataStackElementValue (name).hashCode (), 
-		   var);
     }
 }

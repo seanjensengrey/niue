@@ -25,21 +25,37 @@
 
 package org.niue.vm.operation;
 
+import java.util.Stack;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
-import org.niue.vm.ByteCode;
 
-public final class DefVar implements IVmOperation {
-    
-    public void execute (Vm vm) throws VmException {
-	DataStackElement name = vm.pop ();
-	DataStackElement var = vm.pop ();
-	if (name.getType () != ByteCode.Type.STRING) {
-	    throw new VmException ("Name must be a string.");
-	}
-	vm.putVar (vm.getDataStackElementValue (name).hashCode (), 
-		   var);
+public final class Pid implements IVmOperation {
+
+    public enum Type { SELF, SUPER };
+
+    public Pid (Type type) {
+	this.type = type;
     }
+
+    public void execute (Vm vm) throws VmException {
+	int pid = 0;
+	switch (type) {
+	case SELF:
+	    pid = vm.getPid ();
+	    break;
+	case SUPER:
+	    {
+		Vm parent = vm.getParentVm ();
+		if (parent != null) {
+		    pid = parent.getPid ();
+		}
+		break;
+	    }
+	}
+	vm.pushInteger (pid);
+    }
+
+    private Type type;
 }

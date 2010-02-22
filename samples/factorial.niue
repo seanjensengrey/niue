@@ -1,1 +1,6 @@
-'fact [ dup 1 > [ dup 1 - fact * ] when ] ;
+( function to find the factorial of the number on the stack) 
+[ dup 1 > [ dup 1 - factorial * ] when ] 'factorial ;
+
+( samples )
+4 factorial . ( 24 )
+10 factorial . ( 3628800 )

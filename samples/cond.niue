@@ -1,7 +1,7 @@
-'age 31 ;
-'age-is [ age dup ] ;
-'test-age [ age-is 30 > [ '>30 swap , ] if 
-              [ , age-is 30 = [ '=30 swap , ] if 
-                 [ 30 < [ '<30 ] when ] else ] else ] ;
+31 'age ;
+[ age dup ] 'age-is ;
+[ age-is 30 > [ '>30 swap , ] if 
+      [ , age-is 30 = [ '=30 swap , ] if 
+         [ 30 < [ '<30 ] when ] else ] else ] 'test-age ;
 
 test-age 

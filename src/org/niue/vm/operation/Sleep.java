@@ -34,12 +34,9 @@ import org.niue.vm.ByteCode;
 public final class Sleep implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
-	DataStackElement elem = vm.pop ();
-	if (elem.getType () != ByteCode.Type.INTEGER) {
-            VmException.raiseUnexpectedValueOnStack ();
-        }
+	int millis = vm.popInteger ();
         try {
-            Thread.sleep (elem.getElement ());
+            Thread.sleep (millis);
         } catch (InterruptedException ex) {
         }
     }

@@ -25,29 +25,49 @@
 
 package org.niue;
 
+import java.io.PrintStream;
+import java.io.InputStream;
+import java.io.IOException;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 
 public final class Niue {
     public static void main(String[] args) throws Exception {
-	Reader parser = new Reader (System.in);
+	run (new Vm ());
+    }
+
+    public static void run (Vm vm) throws VmException {
+	run (vm, System.in, System.out);
+    }
+
+    public static void run (Vm vm, InputStream in) throws VmException {
+	run (vm, in, System.out);
+    }
+
+    public static void run (Vm vm, InputStream in, PrintStream out) 
+	throws VmException {
+	Reader parser = new Reader (in);
+	vm.setOutput (out);
 	String token = null;
-	Vm vm = new Vm ();
-	vm.setOutput (System.out);
-	while ((token = parser.getToken ()) != null) {
-	    try {
-		token = token.trim ();
-		if (token.length() > 0) {
-		    vm.execute (token.trim());		
+	try {
+	    while ((token = parser.getToken ()) != null) {
+		try {
+		    token = token.trim ();
+		    if (token.length() > 0) {
+			vm.execute (token.trim());		
+		    }
+		} catch (VmException ex) {
+		    // ex.printStackTrace ();
+		    out.println (ex.getMessage ());
 		}
-	    } catch (VmException ex) {
-                // ex.printStackTrace ();
-		System.out.println (ex.getMessage ());
+		if (vm.isStopped ()) {
+		    break;
+		}
 	    }
-	    if (vm.isStopped ()) {
-		System.out.println ("bye.");
-		break;
-	    }
+	} catch (ReaderException ex) {
+	    throw new VmException (ex);
+	} catch (IOException ex) {
+	    throw new VmException (ex);
 	}
     }
 }

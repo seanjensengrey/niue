@@ -25,21 +25,33 @@
 
 package org.niue.vm.operation;
 
+import java.io.FileInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import org.niue.Niue;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
-import org.niue.vm.DataStackElement;
-import org.niue.vm.ByteCode;
 
-public final class DefVar implements IVmOperation {
+public final class Load implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
-	DataStackElement name = vm.pop ();
-	DataStackElement var = vm.pop ();
-	if (name.getType () != ByteCode.Type.STRING) {
-	    throw new VmException ("Name must be a string.");
+	String fileName = vm.popString ();
+	DataInputStream in = null;
+	try {
+	    in = new DataInputStream
+		(new FileInputStream (fileName));
+	    Niue.run (vm, in, vm.getOutput ());
+	} catch (IOException ex) {
+	    throw new VmException (ex.getMessage ());
+	} catch (VmException ex) {
+	    throw ex;
+	} finally {
+	    if (in != null) {
+		try {
+		    in.close ();
+		} catch (IOException ex) { }
+	    }
 	}
-	vm.putVar (vm.getDataStackElementValue (name).hashCode (), 
-		   var);
     }
 }

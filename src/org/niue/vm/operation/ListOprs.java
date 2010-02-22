@@ -25,21 +25,55 @@
 
 package org.niue.vm.operation;
 
+import java.util.List;
+import java.util.Stack;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
-import org.niue.vm.ByteCode;
 
-public final class DefVar implements IVmOperation {
+public final class ListOprs implements IVmOperation {
     
-    public void execute (Vm vm) throws VmException {
-	DataStackElement name = vm.pop ();
-	DataStackElement var = vm.pop ();
-	if (name.getType () != ByteCode.Type.STRING) {
-	    throw new VmException ("Name must be a string.");
-	}
-	vm.putVar (vm.getDataStackElementValue (name).hashCode (), 
-		   var);
+    public enum Operator { AT, REMOVE, REMOVE_ALL, GET };
+    
+    public ListOprs (Operator opr) {
+        operator = opr;
     }
+
+    public void execute (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	switch (operator) {
+	case AT:
+	    {
+		vm.push (dataStack.get (vm.popInteger ()));
+		break;
+	    }
+	case REMOVE:
+	    {
+		dataStack.remove (vm.popInteger ());
+		break;
+	    }
+	case REMOVE_ALL:
+	    {
+		dataStack.removeAllElements ();
+		break;
+	    }
+	case GET:
+	    {
+		DataStackElement key = vm.pop ();
+		int sz = dataStack.size ();
+		boolean found = false;
+		for (int i = 0; i < sz; ++i) {
+		    if (found) {
+			dataStack.push (dataStack.get (i));
+			break;
+		    }
+		    found = Cmpr.equals (key, dataStack.get (i), vm, false);
+		}
+		break;
+	    }
+	}
+    }
+    
+    private Operator operator;
 }

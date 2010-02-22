@@ -28,18 +28,70 @@ package org.niue.vm.operation;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
-import org.niue.vm.DataStackElement;
-import org.niue.vm.ByteCode;
 
-public final class DefVar implements IVmOperation {
+public final class StringOprs implements IVmOperation {
     
-    public void execute (Vm vm) throws VmException {
-	DataStackElement name = vm.pop ();
-	DataStackElement var = vm.pop ();
-	if (name.getType () != ByteCode.Type.STRING) {
-	    throw new VmException ("Name must be a string.");
-	}
-	vm.putVar (vm.getDataStackElementValue (name).hashCode (), 
-		   var);
+    public enum Operator { STR_LEN, STR_AT, STR_EQ, STR_EQI,
+	    STR_TOUPPER, STR_TOLOWER, STR_TRIM, SUBSTR };
+    
+    public StringOprs (Operator opr) {
+        operator = opr;
     }
+
+    public void execute (Vm vm) throws VmException {
+	String str1 = null;
+	if (operator != Operator.STR_AT 
+	    && operator != Operator.SUBSTR) {
+	    str1 = vm.popString ();
+	}
+	switch (operator) {
+	case STR_LEN:
+	    {
+		vm.pushInteger (str1.length ());
+		break;
+	    }
+	case STR_AT:
+	    {
+		int idx = vm.popInteger ();
+		str1 = vm.popString ();
+		vm.pushInteger (Character.getNumericValue (str1.charAt (idx)));
+		break;
+	    }
+	case STR_EQ:
+	case STR_EQI:
+	    {
+		String str2 = vm.popString ();
+		if (operator == Operator.STR_EQ)
+		    vm.pushBoolean (str1.equals (str2));
+		else
+		    vm.pushBoolean (str1.equalsIgnoreCase (str2));
+		break;
+	    }
+	case STR_TOUPPER:
+	    {
+		vm.pushString (str1.toUpperCase ());
+		break;
+	    }
+	case STR_TOLOWER:
+	    {
+		vm.pushString (str1.toLowerCase ());
+		break;
+	    }
+	case STR_TRIM:
+	    {
+		vm.pushString (str1.trim ());
+		break;
+	    }
+	case SUBSTR:
+	    {
+		int idxEnd = vm.popInteger ();
+		int idxStart = vm.popInteger ();
+		str1 = vm.popString ();
+		vm.pushString (str1.substring (idxStart, idxEnd));
+		break;
+	    }
+	}
+    }
+    
+    private Operator operator;
 }

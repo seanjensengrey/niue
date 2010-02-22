@@ -46,6 +46,10 @@ final class DefaultWords {
             vmOperations.put (DEF_VAR, new DefVar ());
             vmOperations.put (SPAWN, new Spawn ());
             vmOperations.put (SLEEP, new Sleep ());
+            vmOperations.put (RECEIVE, new Receive ());
+            vmOperations.put (SELF, new Pid (Pid.Type.SELF));
+            vmOperations.put (SUPER, new Pid (Pid.Type.SUPER));
+            vmOperations.put (LOAD, new Load ());
 
             // Arithmetic
             vmOperations.put (ADD, new Arith (Arith.Operator.ADD));
@@ -75,12 +79,18 @@ final class DefaultWords {
             vmOperations.put (OVER, new StackManip (StackManip.Operator.OVER));
             vmOperations.put (ROT, new StackManip (StackManip.Operator.ROT));
             vmOperations.put (DROP, new StackManip (StackManip.Operator.DROP));
-            vmOperations.put (TWO_SWAP, new StackManip (StackManip.Operator.TWO_SWAP));
-            vmOperations.put (TWO_DUP, new StackManip (StackManip.Operator.TWO_DUP));
-            vmOperations.put (TWO_OVER, new StackManip (StackManip.Operator.TWO_OVER));
-            vmOperations.put (TWO_DROP, new StackManip (StackManip.Operator.TWO_DROP));
-            vmOperations.put (PUSH_TO_PARENT, new StackManip (StackManip.Operator.PUSH_SYNC));
-            vmOperations.put (DONE_PUSH_TO_PARENT, new StackManip (StackManip.Operator.DONE_PUSH_SYNC));
+            vmOperations.put (TWO_SWAP, new StackManip 
+			      (StackManip.Operator.TWO_SWAP));
+            vmOperations.put (TWO_DUP, new StackManip 
+			      (StackManip.Operator.TWO_DUP));
+            vmOperations.put (TWO_OVER, new StackManip 
+			      (StackManip.Operator.TWO_OVER));
+            vmOperations.put (TWO_DROP, new StackManip 
+			      (StackManip.Operator.TWO_DROP));
+            vmOperations.put (PUSH_TO_PARENT, new StackManip 
+			      (StackManip.Operator.PUSH_SYNC));
+            vmOperations.put (DONE_PUSH_TO_PARENT, new StackManip 
+			      (StackManip.Operator.DONE_PUSH_SYNC));
 
 	    // Control flow
             vmOperations.put (IF_TRUE, new If (If.Cond.IF_TRUE));
@@ -90,6 +100,32 @@ final class DefaultWords {
             vmOperations.put (WHILE, new Loop (Loop.Type.WHILE));
             vmOperations.put (TIMES, new Loop (Loop.Type.TIMES));
             vmOperations.put (TIMES_BY, new Loop (Loop.Type.TIMES_BY));
+
+	    // String operations
+            vmOperations.put (STR_LEN, new StringOprs 
+			      (StringOprs.Operator.STR_LEN));
+            vmOperations.put (STR_AT, new StringOprs 
+			      (StringOprs.Operator.STR_AT));
+            vmOperations.put (STR_EQ, new StringOprs 
+			      (StringOprs.Operator.STR_EQ));
+            vmOperations.put (STR_EQI, new StringOprs 
+			      (StringOprs.Operator.STR_EQI));
+            vmOperations.put (STR_TOLOWER, new StringOprs 
+			      (StringOprs.Operator.STR_TOLOWER));
+            vmOperations.put (STR_TOUPPER, new StringOprs
+			      (StringOprs.Operator.STR_TOUPPER));
+            vmOperations.put (STR_TRIM, new StringOprs 
+			      (StringOprs.Operator.STR_TRIM));
+            vmOperations.put (SUBSTR, new StringOprs 
+			      (StringOprs.Operator.SUBSTR));
+	    
+	    // List operations on the stack
+	    vmOperations.put (AT, new ListOprs (ListOprs.Operator.AT));
+	    vmOperations.put (REMOVE, new ListOprs 
+			      (ListOprs.Operator.REMOVE));
+	    vmOperations.put (REMOVE_ALL, new ListOprs 
+			      (ListOprs.Operator.REMOVE_ALL));
+	    vmOperations.put (GET, new ListOprs (ListOprs.Operator.GET));
         }
         return (Hashtable<Integer, IVmOperation>) vmOperations.clone ();
     }
@@ -102,10 +138,14 @@ final class DefaultWords {
     static final int DOT = ".".hashCode ();
     static final int DISCARD = ",".hashCode ();
     static final int FORGET = "forget".hashCode ();
-    static final int RUN = "run".hashCode ();
+    static final int RUN = "!".hashCode ();
     static final int DEF_VAR = ";".hashCode ();
-    static final int SPAWN = "spawn".hashCode ();
+    static final int SPAWN = "!!".hashCode ();
     static final int SLEEP = "sleep".hashCode ();
+    static final int RECEIVE = "receive".hashCode ();
+    static final int SELF = "self".hashCode ();
+    static final int SUPER = "super".hashCode ();
+    static final int LOAD = "load".hashCode ();
 
     // Arithmetic
     static final int ADD = "+".hashCode ();
@@ -126,7 +166,7 @@ final class DefaultWords {
     // Logical
     static final int AND = "and".hashCode ();
     static final int OR = "or".hashCode ();
-    static final int NEGATE = "negate".hashCode ();
+    static final int NEGATE = "not".hashCode ();
 
     // Stack manipulation
     static final int LEN = "len".hashCode ();
@@ -150,6 +190,22 @@ final class DefaultWords {
     static final int WHILE = "while".hashCode ();
     static final int TIMES = "times".hashCode ();
     static final int TIMES_BY = "times-by".hashCode ();
+
+    // String operations 
+    static final int STR_LEN = "str-len".hashCode ();
+    static final int STR_AT = "str-at".hashCode ();
+    static final int STR_EQ = "str-eq".hashCode ();
+    static final int STR_EQI = "str-eqi".hashCode ();
+    static final int STR_TOLOWER = "str-tolower".hashCode ();
+    static final int STR_TOUPPER = "str-toupper".hashCode ();
+    static final int STR_TRIM = "str-trim".hashCode ();
+    static final int SUBSTR = "substring".hashCode ();
+
+    // List operations on the stack
+    static final int AT = "at".hashCode ();
+    static final int REMOVE = "remove".hashCode ();
+    static final int REMOVE_ALL = "remove-all".hashCode ();
+    static final int GET = "get".hashCode (); // Treats the stack as a plist.
 
     private static Hashtable<Integer, IVmOperation> vmOperations = null;
 }

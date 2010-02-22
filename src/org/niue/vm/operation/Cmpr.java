@@ -45,7 +45,7 @@ public final class Cmpr implements IVmOperation {
 	DataStackElement elem1 = vm.pop ();
 	switch (operator) {
 	case EQUALS:
-	    equals (elem1, elem2, vm);
+	    equals (elem1, elem2, vm, true);
 	    break;
 	case EQ:
 	    eq (elem1, elem2, vm);
@@ -68,10 +68,16 @@ public final class Cmpr implements IVmOperation {
     // The loosest definition of equality.  Puts true on the stack if
     // the string representations of elem1 and elem2 are the same.  This
     // means, both [ 1 1 = ] and [ 1 "1" = ] will return true.  
-    private void equals (DataStackElement elem1, DataStackElement elem2,
-			 Vm vm) throws VmException {
-	vm.pushBoolean (vm.getDataStackElementValue (elem1).equals 
-			(vm.getDataStackElementValue (elem2)));
+    public static boolean equals (DataStackElement elem1, 
+				  DataStackElement elem2,
+				  Vm vm, boolean pushResult) 
+	throws VmException {
+	boolean b = vm.getDataStackElementValue (elem1).equals 
+	    (vm.getDataStackElementValue (elem2));	
+	if (pushResult) {
+	    vm.pushBoolean (b);
+	}
+	return b;
     }
 
     private void eq (DataStackElement elem1, DataStackElement elem2,

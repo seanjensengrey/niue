@@ -35,10 +35,13 @@ public final class Run implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
 	DataStackElement elem = vm.pop ();
-	if (elem.getType () == ByteCode.Type.VM) {
+	ByteCode.Type type = elem.getType ();
+	if (type == ByteCode.Type.VM) {
 	    vm.runChildVm (elem.getElement (), true);
+	} else if (type == ByteCode.Type.STRING) {
+	    vm.executeWord (elem.getElement ());
 	} else {
-	    throw new VmException ("Not a block.");
+	    VmException.raiseUnexpectedValueOnStack ();
 	}
     }
 }
