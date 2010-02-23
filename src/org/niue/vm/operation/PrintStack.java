@@ -31,6 +31,9 @@ import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 
+// Prints the string representation of stack elements to the 
+// output stream. 
+
 public final class PrintStack implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	Stack<DataStackElement> dataStack = vm.getDataStack ();	

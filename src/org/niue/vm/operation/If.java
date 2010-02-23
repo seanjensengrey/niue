@@ -31,14 +31,29 @@ import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 import org.niue.vm.ByteCode;
 
+// Implements the conditional branching words - if, when and unless. 
+
 public final class If implements IVmOperation {
     
-    public enum Cond { WHEN_TRUE, WHEN_FALSE, IF_TRUE, ELSE };
+    public enum Cond { WHEN, UNLESS, IF, ELSE };
 
     public If (Cond cond) {
 	this.cond = cond;
     }
     
+    // The semantics of when and unless:
+    // `condition block_or_word_to_execute when|unless'
+    // `condition' should be a block or word that leaves a
+    // boolean value on the data stack.  If it is true
+    // 'block_or_word_to_execute' will be executed by `when'. 
+    // If it is false, `block_or_word_to_execute' will be 
+    // executed by `unless'.  
+    // The semantics of if else:
+    // `condition block_or_word_to_execute1 if block_or_word_to_execute2 else
+    // `block_or_word_to_execute1' is executed if the value left by
+    // `condition' is true.  `block_or_word_to_execute2' is executed
+    // otherwise. 
+
     public void execute (Vm vm) throws VmException {
 	DataStackElement c = vm.at (1);
 	if (c.getType () != ByteCode.Type.BOOLEAN) {
@@ -64,18 +79,18 @@ public final class If implements IVmOperation {
 
     private void pushIfNeeded (Vm vm, DataStackElement c,
 			       boolean exec) {
-	if (cond == Cond.IF_TRUE)
+	if (cond == Cond.IF)
 	    vm.push (c);
     }
 
     private boolean shouldExecute (DataStackElement c) {
 	boolean exec = false;
 	switch (cond) {
-	case WHEN_TRUE:
-	case IF_TRUE:
+	case WHEN:
+	case IF:
 	    exec = (c.getElement () == 1);
 	    break;
-	case WHEN_FALSE:
+	case UNLESS:
 	case ELSE:
 	    exec = (c.getElement () == 0);
 	    break;

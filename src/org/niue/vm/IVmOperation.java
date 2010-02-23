@@ -25,6 +25,8 @@
 
 package org.niue.vm;
 
+// A system operations should be an implementation of this interface. 
+
 public interface IVmOperation {
     public void execute (Vm vm) throws VmException;
 }

@@ -31,6 +31,9 @@ import org.niue.vm.VmException;
 import org.niue.vm.ByteCodes;
 import org.niue.vm.ByteCode;
 
+// Executes the ByteCodes in a list within the context
+// of a given virtual machine. 
+
 public final class ByteCodeExecutor implements IVmOperation {
     
     public ByteCodeExecutor (ByteCodes bc) {

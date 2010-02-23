@@ -5,5 +5,5 @@
 0 'sum ; ( sum is accumulated here )
 [ sum + 'sum ; ] 'add-sum ; ( add-sum is passed to map )
 1 2 3 4 5 'add-sum map
-sum ( sum will be now 15 )
+sum ( sum will be now 15 ) . 
 

@@ -59,8 +59,12 @@ public final class Reader {
             } else {
                 ret.append (c);
             }
-        }      
-        return null;
+        } 
+	if (ret.length () > 0) {
+	    return ret.toString ();
+	} else {
+	    return null;
+	}
     }
 
     private String readString (boolean isNormal) 

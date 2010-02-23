@@ -32,6 +32,8 @@ import org.niue.vm.ByteCode;
 import org.niue.vm.DataStackElement;
 import java.math.BigInteger;
 
+// Implements the comparison operators. 
+
 public final class Cmpr implements IVmOperation {
     
     public enum Operator { EQUALS, EQ, LT, GT, LT_EQ, GT_EQ };
@@ -39,10 +41,20 @@ public final class Cmpr implements IVmOperation {
     public Cmpr (Operator opr) {
 	operator = opr;
     }
+
+    public void setOperator (Operator opr) {
+	operator = opr;
+    }
     
     public void execute (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.pop ();
 	DataStackElement elem1 = vm.pop ();
+	execute (vm, elem1, elem2);
+    }
+
+    public void execute (Vm vm, DataStackElement elem1,
+			 DataStackElement elem2) 
+	throws VmException {
 	switch (operator) {
 	case EQUALS:
 	    equals (elem1, elem2, vm, true);

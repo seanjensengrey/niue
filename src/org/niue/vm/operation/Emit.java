@@ -29,6 +29,9 @@ import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 
+// Prints the character representation of the integer to
+// the output stream. 
+
 public final class Emit implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	char c[] = new char[1];

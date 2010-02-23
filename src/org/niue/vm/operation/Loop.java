@@ -31,6 +31,8 @@ import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 import org.niue.vm.ByteCode;
 
+// Implements the words for looping - times, times-by and while. 
+
 public final class Loop implements IVmOperation {
     
     public enum Type { TIMES, TIMES_BY, WHILE };
@@ -50,6 +52,16 @@ public final class Loop implements IVmOperation {
 	    break;
 	}
     }
+
+    // The semantics of the `times' loop is:
+    // `block_or_word_to_execute count times'. 
+    // The block or word will be execute `count' times. 
+    // It will receive the current count at the top of the
+    // stack.  
+    // The semantics of the `times-by' loop is:
+    // `block_or_word_to_execute count incr times'. 
+    // The block or word will be execute `count' times, with
+    // the counter being incremented by `incr'.  
 
     private void times (Vm vm) throws VmException {    
 	DataStackElement c = vm.at (0);
@@ -97,14 +109,21 @@ public final class Loop implements IVmOperation {
 	}
     }
 
+    // The semantics of the `while' loop is:
+    // `condition block_or_word_to_execute while'. 
+    // `condition' should be a block or word that pushes
+    // a boolean to the data stack.  `block_or_word_to_execute'
+    // will be executed as long as `condition' puts true on the
+    // stack. 
+
     private void whileLoop (Vm vm) throws VmException {
 	DataStackElement block = vm.at (0);
 	ByteCode.Type type = block.getType ();
 	if (type != ByteCode.Type.VM && type != ByteCode.Type.STRING) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
-	boolean exec = shouldExecute (vm.at (1));
-	vm.pop ();
+	DataStackElement cond = vm.at (1);
+	boolean exec = shouldExecute (cond, vm);
 	vm.pop ();
 	if (exec) {
 	    int id = block.getElement ();
@@ -112,7 +131,7 @@ public final class Loop implements IVmOperation {
 		try {
 		    while (exec) {
 			vm.runChildVm (id, false);
-			exec = shouldExecute (vm.pop ());
+			exec = shouldExecute (cond, vm);
 		    }
 		} catch (VmException ex) {
 		    throw ex;
@@ -122,19 +141,27 @@ public final class Loop implements IVmOperation {
 	    } else {
 		while (exec) {
 		    vm.executeWord (id);
-		    exec = shouldExecute (vm.pop ());
+		    exec = shouldExecute (cond, vm);
 		}
 	    }
 	}
+	vm.pop ();
+	if (cond.getType () == ByteCode.Type.VM) {
+	    vm.discardChildVm (cond.getElement ());
+	}	
     }
 
-    private boolean shouldExecute (DataStackElement c) 
+    private boolean shouldExecute (DataStackElement c, Vm vm) 
 	throws VmException {
         ByteCode.Type t = c.getType ();
-	if (t != ByteCode.Type.BOOLEAN) {
+	if (t == ByteCode.Type.VM) {
+	    vm.runChildVm (c.getElement (), false);
+	} else if (t == ByteCode.Type.STRING) {
+	    vm.executeWord (c.getElement ());
+	} else {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
-	return (c.getElement () == 1);
+	return vm.popBoolean ();	
     }
 
     private Type type;

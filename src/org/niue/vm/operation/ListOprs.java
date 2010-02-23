@@ -25,6 +25,7 @@
 
 package org.niue.vm.operation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 import org.niue.vm.IVmOperation;
@@ -32,48 +33,110 @@ import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 
+// Implements some words that treats the data stack as a 
+// linked list. 
+
 public final class ListOprs implements IVmOperation {
     
-    public enum Operator { AT, REMOVE, REMOVE_ALL, GET };
+    public enum Operator { AT, REMOVE, REMOVE_ALL, GET,
+	    REVERSE, BSEARCH, SORT};
     
     public ListOprs (Operator opr) {
         operator = opr;
     }
 
     public void execute (Vm vm) throws VmException {
-	Stack<DataStackElement> dataStack = vm.getDataStack ();
 	switch (operator) {
 	case AT:
 	    {
-		vm.push (dataStack.get (vm.popInteger ()));
+		at (vm);
 		break;
 	    }
 	case REMOVE:
 	    {
-		dataStack.remove (vm.popInteger ());
+		remove (vm);
 		break;
 	    }
 	case REMOVE_ALL:
 	    {
-		dataStack.removeAllElements ();
+		remove_all (vm);
 		break;
 	    }
 	case GET:
 	    {
-		DataStackElement key = vm.pop ();
-		int sz = dataStack.size ();
-		boolean found = false;
-		for (int i = 0; i < sz; ++i) {
-		    if (found) {
-			dataStack.push (dataStack.get (i));
-			break;
-		    }
-		    found = Cmpr.equals (key, dataStack.get (i), vm, false);
-		}
+		get (vm);
+		break;
+	    }
+	case REVERSE:
+	    {
+		reverse (vm);
+		break;
+	    }
+	case SORT:
+	    {
+		sort (vm);
+		break;
+	    }
+	case BSEARCH:
+	    {
+		bsearch (vm);
 		break;
 	    }
 	}
     }
-    
+
+    private void at (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	vm.push (dataStack.get (vm.popInteger ()));
+    }
+
+    private void remove (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	dataStack.remove (vm.popInteger ());
+    }
+
+    private void remove_all (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	dataStack.removeAllElements ();
+    }
+
+    private void get (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	DataStackElement key = vm.pop ();
+	int sz = dataStack.size ();
+	boolean found = false;
+	for (int i = 0; i < sz; ++i) {
+	    if (found) {
+		dataStack.push (dataStack.get (i));
+		break;
+	    }
+	    found = Cmpr.equals (key, dataStack.get (i), vm, false);
+	}
+    }
+
+    private void reverse (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	Collections.reverse (dataStack);
+    }
+
+    @SuppressWarnings("unchecked") private void sort (Vm vm) 
+	throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	Collections.sort (dataStack);
+    }
+
+    @SuppressWarnings("unchecked") private void bsearch (Vm vm) 
+	throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	try {
+	    int idx = Collections.binarySearch ((List) dataStack,
+						(Object) 
+						dataStack.pop ());
+	    vm.pushInteger (idx);	    
+	} catch (ClassCastException ex) {
+	    throw new VmException (ex.getMessage ());
+	}
+    }
+
     private Operator operator;
 }

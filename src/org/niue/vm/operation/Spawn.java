@@ -31,6 +31,9 @@ import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 import org.niue.vm.ByteCode;
 
+// Runs the virtual machine on the top of data stack
+// in a new process. 
+
 public final class Spawn implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {

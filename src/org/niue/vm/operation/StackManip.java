@@ -25,6 +25,7 @@
 
 package org.niue.vm.operation;
 
+import java.util.Collections;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
@@ -34,7 +35,7 @@ import java.math.BigInteger;
 
 public final class StackManip implements IVmOperation {
     
-    public enum Operator { LEN, SWAP, DUP, OVER, ROT, DROP,
+    public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC,
             DONE_PUSH_SYNC };
 
@@ -50,6 +51,9 @@ public final class StackManip implements IVmOperation {
                 break;
 	    case SWAP:
 		swap (vm);
+		break;
+	    case SWAP_AT:
+		swap_at (vm);
 		break;
 	    case DUP:
 		dup (vm);
@@ -104,6 +108,12 @@ public final class StackManip implements IVmOperation {
 	vm.pop ();
 	vm.push (elem2);
 	vm.push (elem1);
+    }
+
+    public static void swap_at (Vm vm) throws VmException {
+	int j = vm.popInteger ();
+	int i = vm.popInteger ();
+	Collections.swap (vm.getDataStack (), i, j);
     }
 
     private void dup (Vm vm) throws VmException {

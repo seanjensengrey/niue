@@ -41,7 +41,7 @@ public final class Load implements IVmOperation {
 	try {
 	    in = new DataInputStream
 		(new FileInputStream (fileName));
-	    Niue.run (vm, in, vm.getOutput ());
+	    vm.getNiue ().run (vm, in, vm.getOutput ());
 	} catch (IOException ex) {
 	    throw new VmException (ex.getMessage ());
 	} catch (VmException ex) {

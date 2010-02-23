@@ -1,2 +1,3 @@
-Niue is a concatenative language for the Java Virtual Machine, based on the
-design of Forth.  For licensing and copyright information, see the COPYING file.
+Niue is a concatenative language for the Java Virtual Machine.  
+The INSTALL file contains details on how to build the Niue source code.
+For licensing and copyright information, see the COPYING file.

@@ -1,7 +1,8 @@
 0 'count ;
 [ count 5 < ] 'check-count ;
-[ count . count 1 + 'count ; check-count ] 'print-and-count ;
-check-count 'print-and-count while
+'check-count [ count . count 1 + 'count ; ] while
+0 'count ;
+[ count 10 < ] [ count . count 1 + 'count ; ] while
 
 0 [ + ] 10 times ( leaves 45 on stack ) . 
 0 [ + ] 10 2 times-by ( leaves 20 on stack ) . 

@@ -25,6 +25,8 @@
 
 package org.niue.vm;
 
+// Represents a compiled byte code. 
+
 public final class ByteCode {
     
     public enum Type { BOOLEAN, INTEGER, BIGINTEGER, DOUBLE, STRING, 

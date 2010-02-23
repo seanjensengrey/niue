@@ -25,21 +25,54 @@
 
 package org.niue.vm;
 
-public class DataStackElement {
+import org.niue.vm.operation.Cmpr;
 
-    public DataStackElement () {
+// Represents an entry on the data stack. 
+
+public class DataStackElement implements Comparable {
+
+    public DataStackElement (Vm vm) {
 	element = 0;
 	type = ByteCode.Type.INTEGER;
+	this.vm = vm;
     }
 
-    public DataStackElement (int e, ByteCode.Type t) {
+    public DataStackElement (int e, ByteCode.Type t, Vm vm) {
 	element = e;
 	type = t;
+	this.vm = vm;
     }
 
     public int getElement () { return element; }
     public ByteCode.Type getType () { return type; }
 
+    @Override
+    public int compareTo (Object obj) {
+	DataStackElement e = (DataStackElement) obj;
+	Cmpr.Operator opr = Cmpr.Operator.EQ;
+	if (e.type == ByteCode.Type.STRING 
+	    && type == ByteCode.Type.STRING) {
+	    opr = Cmpr.Operator.EQUALS;
+	}
+	Cmpr c = new Cmpr (opr);
+	try {
+	    c.execute (vm, this, e);
+	    if (vm.popBoolean ()) return 0;
+	    c.setOperator (Cmpr.Operator.LT);
+	    c.execute (vm, this, e);
+	    if (vm.popBoolean ()) return -1;
+	    c.setOperator (Cmpr.Operator.GT);
+	    c.execute (vm, this, e);
+	    if (vm.popBoolean ()) return 1;
+	} catch (VmException ex) {
+	    return -1; // Not a proper way to handle this exception. 
+	} catch (ClassCastException ex) {
+	    return -1;
+	}
+	return 0;
+    }
+
     private int element;
     private ByteCode.Type type;
+    private Vm vm = null;
 }

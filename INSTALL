@@ -1,0 +1,7 @@
+To build the Niue source code, you need JDK 1.5 (or later) and the Apache 
+Ant (http://ant.apache.org/) build system. 
+
+Take a command shell, cd to the same directory as this INSTALL file and run 
+`ant'. This will create a new folder `classes' with all the compiled class files. 
+If you need a jar file, run `ant jar'.
+

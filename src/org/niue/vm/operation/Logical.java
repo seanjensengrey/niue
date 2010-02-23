@@ -31,6 +31,8 @@ import org.niue.vm.VmException;
 import org.niue.vm.ByteCode;
 import org.niue.vm.DataStackElement;
 
+// Implements the logical operators - and, or and not. 
+
 public final class Logical implements IVmOperation {
     
     public enum Operator { AND, OR, NEGATE };

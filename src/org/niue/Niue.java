@@ -33,18 +33,23 @@ import org.niue.vm.VmException;
 
 public final class Niue {
     public static void main(String[] args) throws Exception {
-	run (new Vm ());
+	Niue niue = new Niue ();
+	niue.run ();
     }
 
-    public static void run (Vm vm) throws VmException {
+    public void run () throws VmException {
+	run (new Vm (this));
+    }
+
+    public void run (Vm vm) throws VmException {
 	run (vm, System.in, System.out);
     }
 
-    public static void run (Vm vm, InputStream in) throws VmException {
+    public void run (Vm vm, InputStream in) throws VmException {
 	run (vm, in, System.out);
     }
 
-    public static void run (Vm vm, InputStream in, PrintStream out) 
+    public void run (Vm vm, InputStream in, PrintStream out) 
 	throws VmException {
 	Reader parser = new Reader (in);
 	vm.setOutput (out);
@@ -70,4 +75,11 @@ public final class Niue {
 	    throw new VmException (ex);
 	}
     }
+
+    public int nextProcId () {
+        if (procId >= (Integer.MAX_VALUE - 1)) procId = 0;
+	return ++procId;
+    }
+
+    private int procId = 0;
 }

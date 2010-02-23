@@ -27,10 +27,15 @@ package org.niue.vm;
 
 import java.util.ArrayList;
 
+// A list of ByteCodes. 
+
 public final class ByteCodes {
     public void add (ByteCode bc) {
 	byteCodes.add (bc);
     }
+
+    // Returns the next ByteCode, based on an internally
+    // maintained index.  Returns null if the list is done. 
 
     public ByteCode next () {
 	if (index >= byteCodes.size ()) {
@@ -40,14 +45,21 @@ public final class ByteCodes {
 	}
     }
 
+    // Resets the internal index to 0. 
+
     public void resetIndex () {
 	index = 0;
     }
+
+    // Retruns the number of ByteCodes in the list. 
 
     public int size () {
 	return byteCodes.size ();
     }
     
+    // Returns the ByteCode at `i'.  Returns null if the
+    // index is invalid. 
+
     public ByteCode at (int i) {
 	try {
 	    return byteCodes.get (i);

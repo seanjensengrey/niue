@@ -28,10 +28,14 @@ package org.niue.vm;
 import java.util.Hashtable;
 import org.niue.vm.operation.*;
 
+// The default system words that will be assigned to all
+// virtual machines.  The operations represented by these
+// words are implemented in the org.niue.vm.operations.* classes. 
+
 final class DefaultWords {
     
-    @SuppressWarnings("unchecked") 
-	static Hashtable <Integer, IVmOperation> getDefaultOperation () {
+    @SuppressWarnings("unchecked") static Hashtable <Integer, IVmOperation> 
+	getDefaultOperation () {
         if (vmOperations == null) {
             vmOperations = new Hashtable<Integer, IVmOperation> ();
             // Contract utilities, VM control.
@@ -75,6 +79,8 @@ final class DefaultWords {
             // Stack manipulation
             vmOperations.put (LEN, new StackManip (StackManip.Operator.LEN));
             vmOperations.put (SWAP, new StackManip (StackManip.Operator.SWAP));
+            vmOperations.put (SWAP_AT, new StackManip 
+			      (StackManip.Operator.SWAP_AT));
             vmOperations.put (DUP, new StackManip (StackManip.Operator.DUP));
             vmOperations.put (OVER, new StackManip (StackManip.Operator.OVER));
             vmOperations.put (ROT, new StackManip (StackManip.Operator.ROT));
@@ -93,10 +99,10 @@ final class DefaultWords {
 			      (StackManip.Operator.DONE_PUSH_SYNC));
 
 	    // Control flow
-            vmOperations.put (IF_TRUE, new If (If.Cond.IF_TRUE));
+            vmOperations.put (IF, new If (If.Cond.IF));
             vmOperations.put (ELSE, new If (If.Cond.ELSE));
-            vmOperations.put (WHEN_FALSE, new If (If.Cond.WHEN_FALSE));
-            vmOperations.put (WHEN_TRUE, new If (If.Cond.WHEN_TRUE));
+            vmOperations.put (UNLESS, new If (If.Cond.UNLESS));
+            vmOperations.put (WHEN, new If (If.Cond.WHEN));
             vmOperations.put (WHILE, new Loop (Loop.Type.WHILE));
             vmOperations.put (TIMES, new Loop (Loop.Type.TIMES));
             vmOperations.put (TIMES_BY, new Loop (Loop.Type.TIMES_BY));
@@ -126,6 +132,9 @@ final class DefaultWords {
 	    vmOperations.put (REMOVE_ALL, new ListOprs 
 			      (ListOprs.Operator.REMOVE_ALL));
 	    vmOperations.put (GET, new ListOprs (ListOprs.Operator.GET));
+	    vmOperations.put (REVERSE, new ListOprs (ListOprs.Operator.REVERSE));
+	    vmOperations.put (BSEARCH, new ListOprs (ListOprs.Operator.BSEARCH));
+	    vmOperations.put (SORT, new ListOprs (ListOprs.Operator.SORT));
         }
         return (Hashtable<Integer, IVmOperation>) vmOperations.clone ();
     }
@@ -171,6 +180,7 @@ final class DefaultWords {
     // Stack manipulation
     static final int LEN = "len".hashCode ();
     static final int SWAP = "swap".hashCode ();
+    static final int SWAP_AT = "swap-at".hashCode ();
     static final int DUP = "dup".hashCode ();
     static final int OVER = "over".hashCode ();
     static final int ROT = "rot".hashCode ();
@@ -183,10 +193,10 @@ final class DefaultWords {
     static final int DONE_PUSH_TO_PARENT = ">>".hashCode ();
 
     // Control flow
-    static final int IF_TRUE = "if".hashCode ();
+    static final int IF = "if".hashCode ();
     static final int ELSE = "else".hashCode ();
-    static final int WHEN_FALSE = "unless".hashCode ();
-    static final int WHEN_TRUE = "when".hashCode ();
+    static final int UNLESS = "unless".hashCode ();
+    static final int WHEN = "when".hashCode ();
     static final int WHILE = "while".hashCode ();
     static final int TIMES = "times".hashCode ();
     static final int TIMES_BY = "times-by".hashCode ();
@@ -206,6 +216,9 @@ final class DefaultWords {
     static final int REMOVE = "remove".hashCode ();
     static final int REMOVE_ALL = "remove-all".hashCode ();
     static final int GET = "get".hashCode (); // Treats the stack as a plist.
+    static final int REVERSE = "reverse".hashCode ();
+    static final int BSEARCH = "bsearch".hashCode ();
+    static final int SORT = "sort".hashCode ();
 
     private static Hashtable<Integer, IVmOperation> vmOperations = null;
 }

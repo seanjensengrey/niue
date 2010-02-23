@@ -11,8 +11,7 @@
 
 <!-- <splash imageurl="build.png"/> -->
 
-<!-- Paths -->
-
+<property name="name" location="niue"/>
 <property name="src" location="./src"/>
 <property name="lib" location="./lib"/>
 <property name="classes" location="./classes"/>
@@ -40,10 +39,15 @@
   </javac>
 </target>
 
+<target name="jar" description="compile project and create jar"
+	depends="compile">
+  <jar destfile="${name}.jar" 
+       basedir="${classes}" />       
+</target>
+
 <target name="clean" description="clean project">
-  <exec executable="rm"> 
-      <arg line='-rf ./classes' />
-  </exec>
+  <delete dir="${classes}" />
+  <delete file="${name}.jar" />
 </target>
 
 </project>

@@ -1,0 +1,5 @@
+"factorial.niue" load
+"lists.niue" load
+"cond.niue" load
+"loops.niue" load
+"spawn.niue" load

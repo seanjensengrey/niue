@@ -30,15 +30,19 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// Manages the sub-process of a virtual machine.  Uses
+// a thread pool to run many concurrent processes. 
+
 public final class ProcessController extends Thread {
 
     public ProcessController (Vm parent) {
         this.parent = parent;
     }
 
+    // Adds a process to the pool. 
+
     public int add (Vm vm) {
-        if (procId >= (Integer.MAX_VALUE - 1)) procId = 0;
-        ++procId;
+        int procId = vm.getNiue ().nextProcId ();
         vm.setProcId (procId);
         vms.add (vm);
         if (!started) {
@@ -48,6 +52,8 @@ public final class ProcessController extends Thread {
         return procId;
     }
 
+    // Runs the processes in the pool. 
+
     public void run () {
         executors = Executors.newCachedThreadPool ();
         Vm vm = null;
@@ -56,11 +62,15 @@ public final class ProcessController extends Thread {
         }
     }
 
+    // Stops all running processes. 
+
     public void shutdown () {
         if (executors != null)
             executors.shutdownNow ();
     }
     
+    // Callback for the executor. 
+
     public class ExecuteVm implements Runnable {
         ExecuteVm (Vm vm) {
             this.vm = vm;
@@ -84,7 +94,6 @@ public final class ProcessController extends Thread {
     private boolean started = false;
     private LinkedList<Vm> vms = new LinkedList<Vm> ();    
     private ExecutorService executors = null;
-    private static int procId = 0;
     private static final int BYTE_CODES_TO_RUN = 10;
 }
 

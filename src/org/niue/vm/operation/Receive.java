@@ -31,6 +31,10 @@ import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 
+// Makes the virtual machine wait till a given number of
+// values are available on its data stack.  Used for inter-process
+// communication. 
+
 public final class Receive implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {

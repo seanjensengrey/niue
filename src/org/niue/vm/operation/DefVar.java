@@ -31,6 +31,10 @@ import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 import org.niue.vm.ByteCode;
 
+// Pops a string identifier and a value from the 
+// data stack and maps the identifier to the value in
+// the virtual machine's variable table. 
+
 public final class DefVar implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {

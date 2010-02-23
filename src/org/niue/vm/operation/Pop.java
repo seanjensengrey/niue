@@ -30,6 +30,9 @@ import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
 
+// Implements the dot (.) operator.  Pops a value from the 
+// data stack and prints it to the output stream. 
+
 public final class Pop implements IVmOperation {
     
     public Pop (boolean p) {

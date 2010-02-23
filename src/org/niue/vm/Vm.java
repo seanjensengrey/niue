@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.io.PrintStream;
 import java.math.BigInteger;
 
+import org.niue.Niue;
 import org.niue.vm.operation.ByteCodeExecutor;
 
 // The simple Niue virtual machine.  Executes its own compiled
@@ -43,11 +44,11 @@ public final class Vm {
 
     // Used to create a root virtual machine.
 
-    public Vm () {
+    public Vm (Niue niue) {
 	initVmOperations ();
+	this.niue = niue;
 	dataStack = new Stack<DataStackElement> ();
-	if (vmStack.size () == 0) 
-	    vmStack.push (this);
+	makeRootVmStack ();
     }
 
     // Used to create a child virtual machine
@@ -55,7 +56,9 @@ public final class Vm {
     private Vm (Vm parent) {
 	initVmOperations ();
 	parentVm = parent;
+	niue = parentVm.niue;
         dataStack = parentVm.dataStack;
+	vmStack = parentVm.vmStack;
 	out = parent.out;
     }
 
@@ -83,7 +86,7 @@ public final class Vm {
     // Makes sure that the virtual machine is in a runnable state.  
 
     public static void assertNotStopped (Vm vm) throws VmException {
-	if (vm.state.stopped) {
+	if (vm.stopped) {
 	    throw new VmException ("Virtual Machine has been stopped.");
 	}
     }
@@ -119,7 +122,7 @@ public final class Vm {
 	this.out = out;
     }
 
-    // Returns the virtual machin's output stream.  
+    // Returns the virtual machine's output stream.  
 
     public PrintStream getOutput () {
 	return out;
@@ -128,7 +131,7 @@ public final class Vm {
     // Returns true if the virtual machines is in the stopped state.
 
     public boolean isStopped () {
-	return state.stopped;
+	return stopped;
     }
 
     // Returns a reference to the virtual machine's data stack. 
@@ -182,6 +185,17 @@ public final class Vm {
 	}
 	return getString (elem.getElement ());
     }    
+
+    // Pops an element from the data stack.  Returns true or false,
+    // if the element is a boolean, throws an exception otherwise. 
+
+    public boolean popBoolean () throws VmException {
+	DataStackElement elem = pop ();
+	if (elem.getType () != ByteCode.Type.BOOLEAN) {
+	    VmException.raiseUnexpectedValueOnStack ();
+	}
+	return (elem.getElement () == 1 ? true : false);
+    }
 
     // Pushes a raw element to the data stack. 
 
@@ -258,7 +272,7 @@ public final class Vm {
 
     public void stop () {        
 	cleanup ();
-	state.stopped = true;
+	stopped = true;
     }
 
     // Returns the string representation of the data stack element. 
@@ -288,7 +302,7 @@ public final class Vm {
     }
 
     // Pushes a boolean to the data stack.  
-    // true is represented as 1 and fase as 0. 
+    // true is represented as 1 and false as 0. 
 
     public void pushBoolean (boolean b) {
 	if (b) 
@@ -373,7 +387,7 @@ public final class Vm {
     }
 
     // Executes a byte code.  Words are executed and values are
-    // interened and pushed. 
+    // interned and pushed. 
 
     public void executeByteCode (ByteCode bc) throws VmException {
 	switch (bc.type) {
@@ -476,8 +490,7 @@ public final class Vm {
 
     public void spawn (int vmId) {
 	Vm vm = vmTable.get (vmId);
-        vm.dataStack = createFrom (this.dataStack);
-	vm.spawned = true;
+	vm.prepareForSpawning (this);
         if (procController == null || !procController.isAlive ()) {
             procController = new ProcessController (this);
         }
@@ -493,7 +506,7 @@ public final class Vm {
         return byteCodes;
     }
 
-    // Gets the virtal machine identified by the process ID. 
+    // Gets the virtual machine identified by the process ID. 
 
     public Vm getProcess (int procId) {
         if (procId == 0) {
@@ -575,6 +588,13 @@ public final class Vm {
 	return procId;
     }
 
+    // Returns the Niue environment under which this 
+    // virtual machine is running. 
+
+    public Niue getNiue () {
+	return niue;
+    }
+
     // Gets the process ID of the root process. 
 
     private Vm getRootProcess () {
@@ -594,7 +614,7 @@ public final class Vm {
         processTable.put (procId, vm);
     }
 
-    // Updats the mapping of a variable.  If the variable is mapped in
+    // Updates the mapping of a variable.  If the variable is mapped in
     // the parent virtual machine, that is updated. 
 
     private boolean updateVar (int hc, DataStackElement var) {
@@ -668,9 +688,14 @@ public final class Vm {
         }
     }
 
+    // Pushes an identifier along with its type to the data stack.
+
     private void push (int hc, ByteCode.Type type) {
-	push (new DataStackElement (hc, type));
+	push (new DataStackElement (hc, type, this));
     }
+
+    // If `varId' represents a variable, pushes its value to the stack.  
+    // If it represents a named block, executes the block. 
 
     private boolean executeVar (int varId) throws VmException {		    
 	DataStackElement var = vars.get (varId);
@@ -690,6 +715,8 @@ public final class Vm {
 	return true;
     }
 
+    // Returns the system operation identified by `id'. 
+
     private IVmOperation getOperation (int id) {
 	IVmOperation opr = vmOperations.get (id);
 	if (opr == null) {
@@ -699,6 +726,11 @@ public final class Vm {
 	}
 	return opr;
     }    
+
+    // Returns the string identified by `hc' from the string table. 
+    // If the string is not interned in the current virtual machine, 
+    // its parents are searched.  An exception is thrown is the string
+    // was not interned in the virtual machine or any of its parents. 
 
     private String getString (int hc) throws VmException {
 	String s = stringTable.get (hc);
@@ -712,6 +744,9 @@ public final class Vm {
 	return s;
     }
 
+    // Returns a big integer or double from the number table. 
+    // The behavior of this method is the same as that of getString (hc). 
+
     private Number getNumber (int hc) throws VmException {
 	Number n = numberTable.get (hc);
 	if (n == null) {
@@ -724,6 +759,8 @@ public final class Vm {
 	return n;
     }
 
+    // Returns the child virtual machine identified by `hc'. 
+
     private Vm getVm (int hc) {
 	Vm vm = vmTable.get (hc);
 	if (vm == null) {
@@ -733,6 +770,11 @@ public final class Vm {
 	}
 	return vm;
     }
+
+    // Compiles a string token to its byte code representation.  
+    // If the virtual machine is in the compilation mode the byte code
+    // is added to a byte codes list for later retrieval and execution. 
+    // Otherwise, the byte code is executed. 
 
     private void executeToken (String token) throws VmException {
 	int hc = token.hashCode ();
@@ -750,11 +792,18 @@ public final class Vm {
 	}
     }
 
+    // Deals with a block start.  Create a new Vm instance with
+    // compilation mode turned on and further tokens are re-directed 
+    // into it. 
+
     private void blockStart () {
 	Vm currentVm = new Vm (this);
 	currentVm.setCompilationMode (true);
 	vmStack.push (currentVm);
     }
+
+    // Pops the child Vm from the vmStack and adds it to the
+    // child vm list. 
 
     private void blockEnd () {
 	Vm currentVm = vmStack.pop ();
@@ -762,19 +811,28 @@ public final class Vm {
 	parentVm.pushVm (currentVm);
     }
 
+    // Adds a byte code to the byte codes list. 
+
     private void addByteCode (ByteCode bc) {
 	if (byteCodes == null)
 	    byteCodes = new ByteCodes ();
 	byteCodes.add (bc);
     }
 
+    // Checks if the token is the start of a string. 
+
     private boolean isString (String token) {
 	return (token.charAt (0) == '\"');
     }
 
+    // Checks if the token is a boolean value. 
+
     private boolean isBoolean (String token) {
 	return (token.equals ("true") || token.equals ("false"));
     }
+
+    // Tries to convert the token to an Integer.  If token
+    // cannot be parsed, null is returned. 
 
     private Integer parseInt (String token) {
 	if (VmNumber.hasLargeNumberPrefix (token))
@@ -793,6 +851,8 @@ public final class Vm {
 	}
     }
 
+    // Adds a string to the string table. 
+
     private int internString (String s) {
 	String str = s;
 	if (s.charAt (0) == '\"')
@@ -806,6 +866,8 @@ public final class Vm {
 	return hc;
     }
 
+    // Adds number to number table. 
+
     private int internNumber (Number n) {
 	int hc = n.hashCode ();
 	if (numberTable.get (hc) == null) {
@@ -816,6 +878,8 @@ public final class Vm {
 	return hc;
     }
 
+    // Adds a vm to the child vm table. 
+
     private int internVm (Vm vm) {
 	if (childVmCount >= (Integer.MAX_VALUE - 1))
 	    childVmCount = 0;
@@ -823,6 +887,9 @@ public final class Vm {
 	vmTable.put (hc, vm);
 	return hc;
     }
+
+    // Pushes a virtual machines ID to the stack, after
+    // interning it. 
 
     private void pushVm (Vm vm) {
 	int vmId = internVm (vm);
@@ -833,9 +900,13 @@ public final class Vm {
 	}
     }
 
+    // Pushes an already interned virtual machine to the stack. 
+
     private void pushVm (int vmId) {
 	push (vmId, ByteCode.Type.VM);
     }
+
+    // Compiles a token to a byte code. 
 
     private ByteCode compileToken (String token) throws VmException {
 	ByteCode bc = new ByteCode ();
@@ -865,9 +936,29 @@ public final class Vm {
 	return bc;
     }
 
+    // Initializes the default vm operations table. 
+
     private void initVmOperations () {
 	vmOperations = DefaultWords.getDefaultOperation ();
     }
+
+    // Creates a process specific VM stack. 
+
+    private void makeRootVmStack () {
+	vmStack = new Stack<Vm> ();
+	vmStack.push (this);
+    }
+
+    // Prepares the virtual machine to run on a new process. 
+    // Both data stack and vm stack are create new. 
+
+    private void prepareForSpawning (Vm parent) {
+        dataStack = createFrom (parent.dataStack);
+	makeRootVmStack ();
+	spawned = true;
+    }	
+
+    // Creates a new data stack with elements in `stack'. 
 
     private static Stack<DataStackElement> createFrom (Stack<DataStackElement> stack) {
         Stack<DataStackElement> s = new Stack<DataStackElement> ();
@@ -878,7 +969,8 @@ public final class Vm {
         return s;
     }
 
-    private VmState state = new VmState ();
+    private Niue niue = null;
+    private boolean stopped = false;
     private boolean compilationMode = false;
     private ByteCodes byteCodes = null;
     private Stack<DataStackElement> dataStack = null;
@@ -893,7 +985,6 @@ public final class Vm {
     private Hashtable<Integer, Number> numberTable = 
 	new Hashtable<Integer, Number> (); 
     private Hashtable<Integer, Vm> vmTable = new Hashtable<Integer, Vm> ();
-    private static Stack<Vm> vmStack = new Stack<Vm> ();
     private Vm parentVm = null;
     private int childVmCount = 0;
     private Hashtable<Integer, DataStackElement> vars = 
@@ -901,6 +992,7 @@ public final class Vm {
     private ProcessController procController = null;
     private Hashtable<Integer, Vm> processTable = null;
     private int procId = 0;
+    private Stack<Vm> vmStack = null;
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();

@@ -29,6 +29,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.math.BigInteger;
 
+// Represnts very lart integers and double values.
+
 public class VmNumber {
     public VmNumber (Number n, ByteCode.Type t) {
 	number = n;
@@ -37,6 +39,9 @@ public class VmNumber {
     
     public Number getNumber () { return number; }
     public ByteCode.Type getType () { return type; }
+
+    // Parses the string representation of a number and assigns
+    // an appropriate type to it (either BIGINTEGER or DOUBLE). 
 
     public static VmNumber parse (String token) {
 	if (hasLargeNumberPrefix (token)) 
