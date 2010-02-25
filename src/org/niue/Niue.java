@@ -37,12 +37,27 @@ public final class Niue {
 	niue.run ();
     }
 
+    public Niue () {
+	in = System.in;
+	out = System.out;
+    }
+
+    public Niue (InputStream in) {
+	this.in = in;
+	this.out = System.out;
+    }
+
+    public Niue (InputStream in, PrintStream out) {
+	this.in = in;
+	this.out = out;
+    }
+
     public void run () throws VmException {
 	run (new Vm (this));
     }
 
     public void run (Vm vm) throws VmException {
-	run (vm, System.in, System.out);
+	run (vm, in, out);
     }
 
     public void run (Vm vm, InputStream in) throws VmException {
@@ -82,4 +97,6 @@ public final class Niue {
     }
 
     private int procId = 0;
+    private InputStream in = null;
+    private PrintStream out = null;
 }

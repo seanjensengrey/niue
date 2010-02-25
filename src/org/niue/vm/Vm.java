@@ -28,7 +28,10 @@ package org.niue.vm;
 import java.util.Stack;
 import java.util.EmptyStackException;
 import java.util.Hashtable;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.math.BigInteger;
 
 import org.niue.Niue;
@@ -425,6 +428,20 @@ public final class Vm {
 	}
     }
 
+    // Returns a mapped variable from the vars table. 
+    // Also searches down the list of parents.
+
+    public DataStackElement getVar (String varName) {				    
+	int hc = varName.hashCode ();
+	DataStackElement elem = vars.get (hc);
+	if (elem == null) {
+	    if (parentVm != null) {
+		return parentVm.getVar (varName);
+	    }
+	}
+	return elem;
+    }
+
     // Sets the compilation mode.  If this is true, tokens are
     // only compiled and added to the byte codes list.  They are
     // not executed.  The compiled byte codes can be later executed
@@ -441,7 +458,10 @@ public final class Vm {
 
     public void runChildVm (int vmId, boolean discard) 
 	throws VmException {
-	Vm vm = vmTable.get (vmId);
+	Vm vm = getVm (vmId);
+	if (vm == null) {
+	    throw new VmException ("Failed to get VM.");
+	}
 	vm.dataStack = this.dataStack;
 	vm.run ();
 	if (discard && parentVm == null) {
@@ -460,9 +480,13 @@ public final class Vm {
 
     // Adds a variable mapping.  A child, if not running as a different
     // process, can modify mappings in the parent's variables table.  This
-    // rule is not applicable for mapped code blocks.  
+    // rule is not applicable for mapped code blocks.  If `strict' is true,
+    // the variable is mapped only if it does not already exist. 
 
-    public void putVar (int hc, DataStackElement var) {
+    public void putVar (int hc, DataStackElement var, boolean strict) {
+	if (strict) {
+	    if (vars.get (hc) != null) return;
+	}
 	boolean put = false;
 	if (parentVm == null) {
 	    put = true;
@@ -593,6 +617,48 @@ public final class Vm {
 
     public Niue getNiue () {
 	return niue;
+    }
+
+    // Pushes a virtual machines ID to the stack, after
+    // interning it. 
+
+    public void pushVm (Vm vm) {
+	int vmId = internVm (vm);
+	if (compilationMode) {
+	    addByteCode (new ByteCode (ByteCode.Type.VM, vmId));
+	} else {
+	    pushVm (vmId);
+	}
+    }
+
+    // Returns the child virtual machine identified by `hc'. 
+
+    public Vm getVm (int hc) {
+	Vm vm = vmTable.get (hc);
+	if (vm == null) {
+	    if (parentVm != null) {
+		vm = parentVm.getVm (hc);
+	    }
+	}
+	return vm;
+    }
+
+    // Evaluates a string within the context ot this virtual machine. 
+
+    public void eval (String code) throws VmException {
+	InputStream is = new ByteArrayInputStream (code.getBytes 
+						   (Charset.forName ("UTF-8")));
+	try {
+	    niue.run (this, is);
+	} catch (VmException ex) {
+	    throw ex;
+	} finally {
+	    if (is != null) {
+		try {
+		    is.close ();
+		} catch (java.io.IOException ex) { }
+	    }
+	}
     }
 
     // Gets the process ID of the root process. 
@@ -759,18 +825,6 @@ public final class Vm {
 	return n;
     }
 
-    // Returns the child virtual machine identified by `hc'. 
-
-    private Vm getVm (int hc) {
-	Vm vm = vmTable.get (hc);
-	if (vm == null) {
-	    if (parentVm != null) {
-		vm = parentVm.getVm (hc);
-	    }
-	}
-	return vm;
-    }
-
     // Compiles a string token to its byte code representation.  
     // If the virtual machine is in the compilation mode the byte code
     // is added to a byte codes list for later retrieval and execution. 
@@ -886,18 +940,6 @@ public final class Vm {
 	int hc = childVmCount++;
 	vmTable.put (hc, vm);
 	return hc;
-    }
-
-    // Pushes a virtual machines ID to the stack, after
-    // interning it. 
-
-    private void pushVm (Vm vm) {
-	int vmId = internVm (vm);
-	if (compilationMode) {
-	    addByteCode (new ByteCode (ByteCode.Type.VM, vmId));
-	} else {
-	    pushVm (vmId);
-	}
     }
 
     // Pushes an already interned virtual machine to the stack. 

@@ -1,0 +1,52 @@
+( A simple object that has protected state and 
+  message handling. )
+[ 'sam 'name ;; 32 'age ;; ( The default values of this object )
+   ( Messages: 'get-name, 'get-age, 'set-name, 'set-age )
+   dup 'get-name equals [ name . ] if
+       [ dup 'get-age equals [ age . ] if 
+         [ dup 'set-name equals [ swap 'name ; ] if
+            [ dup 'set-age equals [ swap 'age ; ] when ] else
+          ] else
+        ] else
+     ] 'person ; 
+
+( Some interactions with the person object. )
+
+'get-name person , ( => sam )
+'get-age person , ( => 32 )
+'sunny 'set-name person , 
+21 'set-age person , 
+'get-name person , ( => sunny )
+'get-age person , ( => 21 )
+
+( `Person' objects can also be created by evaluating a 
+   string. Then each person will have its own state. )
+
+"[ 'sam 'name ;; 32 'age ;; ( The default values of this object )
+   ( Messages: 'get-name, 'get-age, 'set-name, 'set-age )
+   dup 'get-name equals [ name . ] if
+       [ dup 'get-age equals [ age . ] if 
+         [ dup 'set-name equals [ swap 'name ; ] if
+            [ dup 'set-age equals [ swap 'age ; ] when ] else
+          ] else
+        ] else
+     ]" 'person ; 
+
+( Create a new person with default values. )
+
+person eval 'sam ;
+
+'get-name sam , ( => sam )
+'get-age sam , ( => 32 )
+
+( Create a new person and customize values. )	
+
+person eval 'dan ;
+
+'dan 'set-name dan ,
+35 'set-age dan ,
+'get-name dan , ( => dan )
+'get-age dan , ( => 35 )
+
+'get-name sam , ( => sam )
+'get-age sam , ( => 32 )

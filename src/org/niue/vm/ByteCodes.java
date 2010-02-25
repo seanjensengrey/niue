@@ -68,6 +68,16 @@ public final class ByteCodes {
 	}
     }
 
+    // Makes a copy of this object. 
+
+    public @SuppressWarnings("unchecked") ByteCodes copy () {
+	ByteCodes bc = new ByteCodes ();
+	bc.wordId = wordId;
+	bc.index = 0;
+	bc.byteCodes = (ArrayList<ByteCode>) byteCodes.clone ();
+	return bc;
+    }
+
     private int wordId = -1;
     private ArrayList<ByteCode> byteCodes = new ArrayList<ByteCode> ();
     private int index = 0;

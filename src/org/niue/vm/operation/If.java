@@ -43,8 +43,7 @@ public final class If implements IVmOperation {
     
     // The semantics of when and unless:
     // `condition block_or_word_to_execute when|unless'
-    // `condition' should be a block or word that leaves a
-    // boolean value on the data stack.  If it is true
+    // `condition' should be a boolean value.  If it is true
     // 'block_or_word_to_execute' will be executed by `when'. 
     // If it is false, `block_or_word_to_execute' will be 
     // executed by `unless'.  

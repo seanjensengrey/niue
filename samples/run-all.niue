@@ -2,4 +2,5 @@
 "lists.niue" load
 "cond.niue" load
 "loops.niue" load
+"person-obj.niue" load
 "spawn.niue" load

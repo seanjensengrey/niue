@@ -34,7 +34,7 @@ import org.niue.vm.operation.*;
 
 final class DefaultWords {
     
-    @SuppressWarnings("unchecked") static Hashtable <Integer, IVmOperation> 
+    static @SuppressWarnings("unchecked") Hashtable <Integer, IVmOperation> 
 	getDefaultOperation () {
         if (vmOperations == null) {
             vmOperations = new Hashtable<Integer, IVmOperation> ();
@@ -48,12 +48,14 @@ final class DefaultWords {
             vmOperations.put (FORGET, new Forget ());
             vmOperations.put (RUN, new Run ());
             vmOperations.put (DEF_VAR, new DefVar ());
+            vmOperations.put (DEF_VAR_STRICT, new DefVar (true));
             vmOperations.put (SPAWN, new Spawn ());
             vmOperations.put (SLEEP, new Sleep ());
             vmOperations.put (RECEIVE, new Receive ());
             vmOperations.put (SELF, new Pid (Pid.Type.SELF));
             vmOperations.put (SUPER, new Pid (Pid.Type.SUPER));
             vmOperations.put (LOAD, new Load ());
+	    vmOperations.put (EVAL, new Eval ());
 
             // Arithmetic
             vmOperations.put (ADD, new Arith (Arith.Operator.ADD));
@@ -97,6 +99,7 @@ final class DefaultWords {
 			      (StackManip.Operator.PUSH_SYNC));
             vmOperations.put (DONE_PUSH_TO_PARENT, new StackManip 
 			      (StackManip.Operator.DONE_PUSH_SYNC));
+            vmOperations.put (CLR, new StackManip (StackManip.Operator.CLR));
 
 	    // Control flow
             vmOperations.put (IF, new If (If.Cond.IF));
@@ -149,12 +152,14 @@ final class DefaultWords {
     static final int FORGET = "forget".hashCode ();
     static final int RUN = "!".hashCode ();
     static final int DEF_VAR = ";".hashCode ();
+    static final int DEF_VAR_STRICT = ";;".hashCode ();
     static final int SPAWN = "!!".hashCode ();
     static final int SLEEP = "sleep".hashCode ();
     static final int RECEIVE = "receive".hashCode ();
     static final int SELF = "self".hashCode ();
     static final int SUPER = "super".hashCode ();
     static final int LOAD = "load".hashCode ();
+    static final int EVAL = "eval".hashCode ();
 
     // Arithmetic
     static final int ADD = "+".hashCode ();
@@ -191,6 +196,7 @@ final class DefaultWords {
     static final int TWO_DROP = "2drop".hashCode ();
     static final int PUSH_TO_PARENT = "<<".hashCode ();
     static final int DONE_PUSH_TO_PARENT = ">>".hashCode ();
+    static final int CLR = ".clr".hashCode ();
 
     // Control flow
     static final int IF = "if".hashCode ();

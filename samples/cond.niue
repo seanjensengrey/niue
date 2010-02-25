@@ -4,12 +4,12 @@
       [ , age-is 30 = [ '=30 swap , ] if 
          [ 30 < [ '<30 ] when ] else ] else ] 'test-age ;
 
-test-age ( >30 ) . 
+test-age ( => >30 ) . 
 
 30 'age ;
 
-test-age ( =30 ) .
+test-age ( => =30 ) .
 
 28 'age ;
 
-test-age ( <30 ) .
+test-age ( => <30 ) .

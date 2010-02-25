@@ -37,7 +37,7 @@ public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC,
-            DONE_PUSH_SYNC };
+            DONE_PUSH_SYNC, CLR };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -85,6 +85,9 @@ public final class StackManip implements IVmOperation {
             case DONE_PUSH_SYNC:
                 donePushSync (vm);
                 break;
+	    case CLR:
+		clear (vm);
+		break;
 	    }
 	} catch (VmException ex) {
 	    throw ex;
@@ -192,6 +195,10 @@ public final class StackManip implements IVmOperation {
         targetVm.setSyncedPush (false);
         vm.setPushingInto (-1);
         vm.setTempDataStack (null);
+    }
+
+    private void clear (Vm vm) {
+	vm.getDataStack ().clear ();
     }
 
     private Operator operator;

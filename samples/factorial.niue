@@ -2,5 +2,5 @@
 [ dup 1 > [ dup 1 - factorial * ] when ] 'factorial ;
 
 ( samples )
-4 factorial . ( 24 )
-10 factorial . ( 3628800 )
+4 factorial . ( => 24 )
+10 factorial . ( => 3628800 )
