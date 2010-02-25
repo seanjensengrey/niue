@@ -77,7 +77,7 @@ public final class Cmpr implements IVmOperation {
 	}
     }
 
-    // The loosest definition of equality.  Puts true on the stack if
+    // The coarsest definition of equality.  Puts true on the stack if
     // the string representations of elem1 and elem2 are the same.  This
     // means, both [ 1 1 = ] and [ 1 "1" = ] will return true.  
     public static boolean equals (DataStackElement elem1, 

@@ -1,6 +1,6 @@
-"factorial.niue" load
-"lists.niue" load
-"cond.niue" load
-"loops.niue" load
-"person-obj.niue" load
-"spawn.niue" load
+"factorial.niue" load newline
+"lists.niue" load newline
+"person-obj.niue" load newline
+"cond.niue" load newline
+"loops.niue" load newline
+"spawn.niue" load newline

@@ -35,7 +35,7 @@ import org.niue.vm.ByteCode;
 
 public final class If implements IVmOperation {
     
-    public enum Cond { WHEN, UNLESS, IF, ELSE };
+    public enum Cond { WHEN, UNLESS, IF, ELIF, ELSE };
 
     public If (Cond cond) {
 	this.cond = cond;
@@ -63,9 +63,9 @@ public final class If implements IVmOperation {
 	if (type != ByteCode.Type.VM && type != ByteCode.Type.STRING) {
 	    VmException.raiseUnexpectedValueOnStack ();
 	}
-	boolean exec = shouldExecute (c);
+	boolean exec = shouldExecute (c, vm);
 	vm.pop ();
-	vm.pop ();
+	vm.pop ();	
 	if (exec) {
 	    if (type == ByteCode.Type.VM) {
 		vm.runChildVm (block.getElement (), true);
@@ -77,18 +77,38 @@ public final class If implements IVmOperation {
     }
 
     private void pushIfNeeded (Vm vm, DataStackElement c,
-			       boolean exec) {
-	if (cond == Cond.IF)
+			       boolean exec) throws VmException {
+	if (cond == Cond.IF) {
 	    vm.push (c);
+	} else if (cond == Cond.ELIF) {
+	    DataStackElement prevc = vm.at (0);
+	    if (prevc.getType () != ByteCode.Type.BOOLEAN) {
+		VmException.raiseUnexpectedValueOnStack ();
+	    }
+	    if (prevc.getElement () == 0) {
+		vm.pop ();
+		vm.push (c);
+	    }
+	}
     }
 
-    private boolean shouldExecute (DataStackElement c) {
+    private boolean shouldExecute (DataStackElement c, Vm vm) 
+	throws VmException {
 	boolean exec = false;
 	switch (cond) {
 	case WHEN:
 	case IF:
 	    exec = (c.getElement () == 1);
 	    break;
+	case ELIF:
+	    {
+		DataStackElement prevc = vm.at (2);
+		if (prevc.getType () != ByteCode.Type.BOOLEAN) {
+		    VmException.raiseUnexpectedValueOnStack ();
+		}
+		exec = (prevc.getElement () == 0 && c.getElement () == 1);
+		break;
+	    }
 	case UNLESS:
 	case ELSE:
 	    exec = (c.getElement () == 0);

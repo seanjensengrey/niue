@@ -100,11 +100,11 @@ public final class StackManip implements IVmOperation {
     // calls to ensure that the stack will be in an unmodified state
     // even if there is an underflow exception.
 
-    private static void len (Vm vm) {
+    static void len (Vm vm) {
         vm.pushInteger (vm.getDataStack ().size ());
     }
 
-    public static void swap (Vm vm) throws VmException {
+    static void swap (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.at (0);
 	DataStackElement elem1 = vm.at (1);
 	vm.pop ();
@@ -113,23 +113,23 @@ public final class StackManip implements IVmOperation {
 	vm.push (elem1);
     }
 
-    public static void swap_at (Vm vm) throws VmException {
+    static void swap_at (Vm vm) throws VmException {
 	int j = vm.popInteger ();
 	int i = vm.popInteger ();
 	Collections.swap (vm.getDataStack (), i, j);
     }
 
-    private void dup (Vm vm) throws VmException {
+    void dup (Vm vm) throws VmException {
 	DataStackElement elem1 = vm.peek ();
 	vm.push (elem1);
     }
 
-    private void over (Vm vm) throws VmException {
+    void over (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.at (1);
 	vm.push (elem2);
     }
 
-    private void rot (Vm vm) throws VmException {
+    void rot (Vm vm) throws VmException {
 	DataStackElement elem1 = vm.at (2);
 	DataStackElement elem2 = vm.at (1);
 	DataStackElement elem3 = vm.at (0);
@@ -141,11 +141,11 @@ public final class StackManip implements IVmOperation {
 	vm.push (elem1);
     }
 
-    private void drop (Vm vm) throws VmException {
+    void drop (Vm vm) throws VmException {
 	vm.pop ();
     }
 
-    private void twoSwap (Vm vm) throws VmException {
+    void twoSwap (Vm vm) throws VmException {
 	DataStackElement elem1p1 = vm.at (3);
 	DataStackElement elem2p1 = vm.at (2);
 	DataStackElement elem1p2 = vm.at (1);
@@ -156,26 +156,26 @@ public final class StackManip implements IVmOperation {
 	vm.push (elem1p1); vm.push (elem2p1);
     }
 
-    private void twoDup (Vm vm) throws VmException {
+    void twoDup (Vm vm) throws VmException {
 	DataStackElement elem1 = vm.at (1);
 	DataStackElement elem2 = vm.at (0);
 	vm.push (elem1); 
 	vm.push (elem2);
     }
 
-    private void twoOver (Vm vm) throws VmException {
+    void twoOver (Vm vm) throws VmException {
 	DataStackElement elem1 = vm.at (2);
 	DataStackElement elem2 = vm.at (3);
 	vm.push (elem2); 
 	vm.push (elem1);
     }
 
-    private void twoDrop (Vm vm) throws VmException {
+    void twoDrop (Vm vm) throws VmException {
 	vm.pop ();
 	vm.pop ();
     }
 
-    private void pushSync (Vm vm) throws VmException {
+    void pushSync (Vm vm) throws VmException {
         if (vm.getPushingInto () != -1) {
             throw new VmException ("Already pushing data to another process.");
         }
@@ -189,7 +189,7 @@ public final class StackManip implements IVmOperation {
         vm.setTempDataStack (targetVm.getDataStack ());
     }
 
-    private void donePushSync (Vm vm) throws VmException {
+    void donePushSync (Vm vm) throws VmException {
         int pid = vm.getPushingInto ();
         Vm targetVm = vm.getProcess (pid);
         targetVm.setSyncedPush (false);
@@ -197,7 +197,7 @@ public final class StackManip implements IVmOperation {
         vm.setTempDataStack (null);
     }
 
-    private void clear (Vm vm) {
+    void clear (Vm vm) {
 	vm.getDataStack ().clear ();
     }
 

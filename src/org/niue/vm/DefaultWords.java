@@ -103,6 +103,7 @@ final class DefaultWords {
 
 	    // Control flow
             vmOperations.put (IF, new If (If.Cond.IF));
+            vmOperations.put (ELIF, new If (If.Cond.ELIF));
             vmOperations.put (ELSE, new If (If.Cond.ELSE));
             vmOperations.put (UNLESS, new If (If.Cond.UNLESS));
             vmOperations.put (WHEN, new If (If.Cond.WHEN));
@@ -200,6 +201,7 @@ final class DefaultWords {
 
     // Control flow
     static final int IF = "if".hashCode ();
+    static final int ELIF = "elif".hashCode ();
     static final int ELSE = "else".hashCode ();
     static final int UNLESS = "unless".hashCode ();
     static final int WHEN = "when".hashCode ();
