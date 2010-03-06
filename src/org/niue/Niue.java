@@ -32,10 +32,6 @@ import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 
 public final class Niue {
-    public static void main(String[] args) throws Exception {
-	Niue niue = new Niue ();
-	niue.run ();
-    }
 
     public Niue () {
 	in = System.in;
