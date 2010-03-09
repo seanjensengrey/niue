@@ -5,7 +5,7 @@
 [ count 10 < ] [ count . count 1 + 'count ; ] while
 
 0 [ + ] 10 times ( leaves 45 on stack ) . 
-0 [ + ] 10 2 times-by ( leaves 20 on stack ) . 
+0 [ + ] 2 10 times-by ( leaves 20 on stack ) . 
 
 newline
 

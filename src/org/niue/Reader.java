@@ -40,12 +40,15 @@ public final class Reader {
     public String getToken () throws IOException, ReaderException {
         StringBuffer ret = new StringBuffer ();
         int i = 0;
-	boolean inComment = false;
+	int inComment = 0;
         while ((i = in.read()) != -1) {
             char c = (char)i;
-	    if (inComment) {
-		if (c == ')')
-		    inComment = false;
+	    if (inComment < 0) {
+		throw new ReaderException ("Comment not properly terminated.");
+	    }
+	    if (inComment > 0) {
+		if (c == ')') --inComment;
+		if (c == '(') ++inComment;
 		continue;
 	    }	
             if (Character.isWhitespace (c)) {
@@ -55,7 +58,7 @@ public final class Reader {
 	    } else if (c == '\'') {
 		return readString (false); // quoted string
 	    } else if (c == '(') {
-		inComment = true;
+		++inComment;
             } else {
                 ret.append (c);
             }
