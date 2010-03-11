@@ -39,7 +39,7 @@ import org.niue.vm.DataStackElement;
 public final class ListOprs implements IVmOperation {
     
     public enum Operator { AT, REMOVE, REMOVE_ALL, GET,
-	    REVERSE, BSEARCH, SORT};
+	    REVERSE, BSEARCH, SORT, REPLACE, REPLACE_ALL};
     
     public ListOprs (Operator opr) {
         operator = opr;
@@ -48,40 +48,32 @@ public final class ListOprs implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	switch (operator) {
 	case AT:
-	    {
-		at (vm);
-		break;
-	    }
+            at (vm);
+            break;
 	case REMOVE:
-	    {
-		remove (vm);
-		break;
-	    }
+            remove (vm);
+            break;
 	case REMOVE_ALL:
-	    {
-		remove_all (vm);
-		break;
-	    }
+            remove_all (vm);
+            break;
 	case GET:
-	    {
-		get (vm);
-		break;
-	    }
+            get (vm);
+            break;
 	case REVERSE:
-	    {
-		reverse (vm);
-		break;
-	    }
+            reverse (vm);
+            break;
 	case SORT:
-	    {
-		sort (vm);
-		break;
-	    }
+            sort (vm);
+            break;
 	case BSEARCH:
-	    {
-		bsearch (vm);
-		break;
-	    }
+            bsearch (vm);
+            break;
+        case REPLACE:
+            replace (vm, false);
+            break;
+        case REPLACE_ALL:
+            replace (vm, true);
+            break;
 	}
     }
 
@@ -133,6 +125,25 @@ public final class ListOprs implements IVmOperation {
 						(Object) 
 						dataStack.pop ());
 	    vm.pushInteger (idx);	    
+	} catch (ClassCastException ex) {
+	    throw new VmException (ex.getMessage ());
+	}
+    }
+
+    @SuppressWarnings("unchecked") private void replace (Vm vm, boolean all) 
+	throws VmException {
+        DataStackElement replaceWith = vm.pop ();
+        DataStackElement replaceThis = vm.pop ();
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	try {
+	    int sz = dataStack.size ();
+            for (int i = 0; i < sz; ++i) {
+                DataStackElement elem = dataStack.elementAt (i);
+                if (elem.compareTo (replaceThis) == 0) {                 
+                    elem.set (replaceWith);
+                    if (!all) break;
+                }
+            }
 	} catch (ClassCastException ex) {
 	    throw new VmException (ex.getMessage ());
 	}

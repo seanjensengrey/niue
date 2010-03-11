@@ -139,6 +139,8 @@ final class DefaultWords {
 	    vmOperations.put (REVERSE, new ListOprs (ListOprs.Operator.REVERSE));
 	    vmOperations.put (BSEARCH, new ListOprs (ListOprs.Operator.BSEARCH));
 	    vmOperations.put (SORT, new ListOprs (ListOprs.Operator.SORT));
+	    vmOperations.put (REPLACE, new ListOprs (ListOprs.Operator.REPLACE));
+	    vmOperations.put (REPLACE_ALL, new ListOprs (ListOprs.Operator.REPLACE_ALL));
         }
         return (Hashtable<Integer, IVmOperation>) vmOperations.clone ();
     }
@@ -227,6 +229,8 @@ final class DefaultWords {
     static final int REVERSE = "reverse".hashCode ();
     static final int BSEARCH = "bsearch".hashCode ();
     static final int SORT = "sort".hashCode ();
+    static final int REPLACE = "replace".hashCode ();
+    static final int REPLACE_ALL = "replace-all".hashCode ();
 
     private static Hashtable<Integer, IVmOperation> vmOperations = null;
 }

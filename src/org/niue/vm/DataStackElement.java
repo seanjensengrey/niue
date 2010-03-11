@@ -46,6 +46,12 @@ public class DataStackElement implements Comparable {
     public int getElement () { return element; }
     public ByteCode.Type getType () { return type; }
 
+    public void set (DataStackElement elem) {
+        this.element = elem.element;
+        this.type = elem.type;
+        this.vm = elem.vm;
+    }
+
     @Override
     public int compareTo (Object obj) {
 	DataStackElement e = (DataStackElement) obj;
@@ -65,9 +71,9 @@ public class DataStackElement implements Comparable {
 	    c.execute (vm, this, e);
 	    if (vm.popBoolean ()) return 1;
 	} catch (VmException ex) {
-	    return -1; // Not a proper way to handle this exception. 
+	    return -2; // Not a proper way to handle this exception. 
 	} catch (ClassCastException ex) {
-	    return -1;
+	    return -3;
 	}
 	return 0;
     }
