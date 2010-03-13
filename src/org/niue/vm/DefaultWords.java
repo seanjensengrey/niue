@@ -150,6 +150,7 @@ final class DefaultWords {
 	    vmOperations.put (REMOVE_ALL, new ListOprs 
 			      (ListOprs.Operator.REMOVE_ALL));
 	    vmOperations.put (GET, new ListOprs (ListOprs.Operator.GET));
+	    vmOperations.put (SET, new ListOprs (ListOprs.Operator.SET));
 	    vmOperations.put (REVERSE, new ListOprs (ListOprs.Operator.REVERSE));
 	    vmOperations.put (BSEARCH, new ListOprs (ListOprs.Operator.BSEARCH));
 	    vmOperations.put (SORT, new ListOprs (ListOprs.Operator.SORT));
@@ -247,6 +248,7 @@ final class DefaultWords {
     static final int REMOVE = "remove".hashCode ();
     static final int REMOVE_ALL = "remove-all".hashCode ();
     static final int GET = "get".hashCode (); // Treats the stack as a plist.
+    static final int SET = "set".hashCode (); // Treats the stack as a plist.
     static final int REVERSE = "reverse".hashCode ();
     static final int BSEARCH = "bsearch".hashCode ();
     static final int SORT = "sort".hashCode ();

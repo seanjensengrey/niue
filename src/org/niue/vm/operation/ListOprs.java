@@ -38,7 +38,7 @@ import org.niue.vm.DataStackElement;
 
 public final class ListOprs implements IVmOperation {
     
-    public enum Operator { AT, REMOVE, REMOVE_ALL, GET,
+    public enum Operator { AT, REMOVE, REMOVE_ALL, GET, SET,
 	    REVERSE, BSEARCH, SORT, REPLACE, REPLACE_ALL};
     
     public ListOprs (Operator opr) {
@@ -58,6 +58,9 @@ public final class ListOprs implements IVmOperation {
             break;
 	case GET:
             get (vm);
+            break;
+        case SET:
+            set (vm);
             break;
 	case REVERSE:
             reverse (vm);
@@ -103,6 +106,23 @@ public final class ListOprs implements IVmOperation {
 		break;
 	    }
 	    found = Cmpr.equals (key, dataStack.get (i), vm, false);
+	}
+    }
+
+    private void set (Vm vm) throws VmException {
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+        DataStackElement newVal = vm.pop ();
+	DataStackElement key = vm.pop ();
+	int sz = dataStack.size ();
+	boolean found = false;
+	for (int i = 0; i < sz; ++i) {
+            DataStackElement elem =  dataStack.get (i);
+            if (found) {
+                elem.set (newVal);
+		break;
+	    }
+            found = Cmpr.equals (key, elem, vm, false);
+	    
 	}
     }
 
