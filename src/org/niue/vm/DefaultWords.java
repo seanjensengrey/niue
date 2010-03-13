@@ -142,6 +142,10 @@ final class DefaultWords {
 			      (StringOprs.Operator.STR_TRIM));
             vmOperations.put (SUBSTR, new StringOprs 
 			      (StringOprs.Operator.SUBSTR));
+            vmOperations.put (STR_REPL, new StringOprs 
+			      (StringOprs.Operator.STR_REPL));
+            vmOperations.put (STR_REPL_ALL, new StringOprs 
+			      (StringOprs.Operator.STR_REPL_ALL));
 	    
 	    // List operations on the stack
 	    vmOperations.put (AT, new ListOprs (ListOprs.Operator.AT));
@@ -242,6 +246,8 @@ final class DefaultWords {
     static final int STR_TOUPPER = "str-toupper".hashCode ();
     static final int STR_TRIM = "str-trim".hashCode ();
     static final int SUBSTR = "substring".hashCode ();
+    static final int STR_REPL = "str-replace".hashCode ();
+    static final int STR_REPL_ALL = "str-replace-all".hashCode ();
 
     // List operations on the stack
     static final int AT = "at".hashCode ();

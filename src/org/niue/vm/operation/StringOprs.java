@@ -32,7 +32,8 @@ import org.niue.vm.VmException;
 public final class StringOprs implements IVmOperation {
     
     public enum Operator { STR_LEN, STR_AT, STR_EQ, STR_EQI,
-	    STR_TOUPPER, STR_TOLOWER, STR_TRIM, SUBSTR };
+	    STR_TOUPPER, STR_TOLOWER, STR_TRIM, SUBSTR, STR_REPL,
+            STR_REPL_ALL};
     
     public StringOprs (Operator opr) {
         operator = opr;
@@ -90,6 +91,22 @@ public final class StringOprs implements IVmOperation {
 		vm.pushString (str1.substring (idxStart, idxEnd));
 		break;
 	    }
+        case STR_REPL:
+            {
+                String replacement = str1;
+                String regex = vm.popString ();
+                String src = vm.popString ();
+                vm.pushString (src.replaceFirst (regex, replacement));
+                break;
+            }
+        case STR_REPL_ALL:
+            {
+                String replacement = str1;
+                String regex = vm.popString ();
+                String src = vm.popString ();
+                vm.pushString (src.replaceAll (regex, replacement));
+                break;
+            }
 	}
     }
     
