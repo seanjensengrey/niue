@@ -36,8 +36,8 @@ import java.math.BigInteger;
 public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
-	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_SYNC,
-            DONE_PUSH_SYNC, CLR };
+	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_TO,
+            PUSH_ALL_TO, CLR };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -79,11 +79,11 @@ public final class StackManip implements IVmOperation {
 	    case TWO_DROP:
 		twoDrop (vm);
 		break;
-            case PUSH_SYNC:
-                pushSync (vm);
+            case PUSH_TO:
+                pushTo (vm, false);
                 break;
-            case DONE_PUSH_SYNC:
-                donePushSync (vm);
+            case PUSH_ALL_TO:
+                pushTo (vm, true);
                 break;
 	    case CLR:
 		clear (vm);
@@ -175,31 +175,40 @@ public final class StackManip implements IVmOperation {
 	vm.pop ();
     }
 
-    void pushSync (Vm vm) throws VmException {
-        if (vm.getPushingInto () != -1) {
-            throw new VmException ("Already pushing data to another process.");
-        }
+    void pushTo (Vm vm, boolean all) throws VmException {
         int pid = vm.popInteger ();
         Vm targetVm = vm.getProcess (pid);
         if (targetVm == null) {
             throw new VmException ("Invalid process id.");
         }
-        vm.setPushingInto (pid);
-        targetVm.setSyncedPush (true);
-        vm.setTempDataStack (targetVm.getDataStack ());
-    }
-
-    void donePushSync (Vm vm) throws VmException {
-        int pid = vm.getPushingInto ();
-        Vm targetVm = vm.getProcess (pid);
-        targetVm.setSyncedPush (false);
-        vm.setPushingInto (-1);
-        vm.setTempDataStack (null);
+        if (all) {
+            pushAllTo (vm, targetVm);
+        } else {
+            pushTo (vm, targetVm);
+        }
     }
 
     void clear (Vm vm) {
 	vm.getDataStack ().clear ();
     }
 
+    private void pushAllTo (Vm vm, Vm targetVm) {
+        while (pushTo (vm, targetVm)) ;
+    }
+
+    private boolean pushTo (Vm vm, Vm targetVm) {
+        try {
+            DataStackElement elem = vm.localPop ();
+            if (vm.isSpawned ()) {
+                targetVm.syncedPush (elem);
+            } else {
+                targetVm.push (elem);
+            }
+            return true;
+        } catch (VmException ex) {
+            return false;
+        }
+    }
+    
     private Operator operator;
 }

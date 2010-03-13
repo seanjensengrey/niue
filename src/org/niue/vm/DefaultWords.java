@@ -95,10 +95,10 @@ final class DefaultWords {
 			      (StackManip.Operator.TWO_OVER));
             vmOperations.put (TWO_DROP, new StackManip 
 			      (StackManip.Operator.TWO_DROP));
-            vmOperations.put (PUSH_TO_PARENT, new StackManip 
-			      (StackManip.Operator.PUSH_SYNC));
-            vmOperations.put (DONE_PUSH_TO_PARENT, new StackManip 
-			      (StackManip.Operator.DONE_PUSH_SYNC));
+            vmOperations.put (PUSH_TO, new StackManip 
+			      (StackManip.Operator.PUSH_TO));
+            vmOperations.put (PUSH_ALL_TO, new StackManip 
+			      (StackManip.Operator.PUSH_ALL_TO));
             vmOperations.put (CLR, new StackManip (StackManip.Operator.CLR));
 
 	    // Control flow
@@ -197,8 +197,8 @@ final class DefaultWords {
     static final int TWO_DUP = "2dup".hashCode ();
     static final int TWO_OVER = "2over".hashCode ();
     static final int TWO_DROP = "2drop".hashCode ();
-    static final int PUSH_TO_PARENT = "<<".hashCode ();
-    static final int DONE_PUSH_TO_PARENT = ">>".hashCode ();
+    static final int PUSH_TO = "push".hashCode ();
+    static final int PUSH_ALL_TO = "push-all".hashCode ();
     static final int CLR = ".clr".hashCode ();
 
     // Control flow

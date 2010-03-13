@@ -202,13 +202,13 @@ public final class Vm {
 
     // Pushes a raw element to the data stack. 
 
-    public void push (DataStackElement i) {
-        if (syncedPush) {
-            synchronized (this) {
-                dataStack.push (i);
-            }
-        } else {
-            dataStack.push (i);
+    public void push (DataStackElement elem) {
+        dataStack.push (elem);
+    }
+
+    public void syncedPush (DataStackElement elem) {
+        synchronized (this) {
+            dataStack.push (elem);
         }
     }
 
@@ -223,6 +223,17 @@ public final class Vm {
             } else {
                 throw new VmException (EMPTY_STACK_MSG);
             }
+	}
+    }
+
+    // Pops a raw element from the data stack.  Does not
+    // look in the parent dataStack.
+
+    public DataStackElement localPop () throws VmException {
+	try {
+	    return dataStack.pop ();
+	} catch (EmptyStackException ex) {
+            throw new VmException (EMPTY_STACK_MSG);
 	}
     }
 
@@ -586,26 +597,6 @@ public final class Vm {
         }
     }
 
-    // Sets the syncedPush mode.  If true, all pushes to the data stack 
-    // will be synchronized. 
-
-    public void setSyncedPush (boolean b) {
-        syncedPush = b;
-    }
-
-    // The process ID into which data is being pushed as part of
-    // inter-process communication. 
-
-    public int getPushingInto () {
-        return pushingInto;
-    }
-
-    // Sets the process ID to push data as part of inter-process communication. 
-
-    public void setPushingInto (int i) {
-        pushingInto = i;
-    }
-
     // Returns the process ID. 
 
     public int getPid () {
@@ -659,6 +650,12 @@ public final class Vm {
 		} catch (java.io.IOException ex) { }
 	    }
 	}
+    }
+
+    // Returns true if this is a spawned vm. 
+
+    public boolean isSpawned () {
+        return spawned;
     }
 
     // Gets the process ID of the root process. 
@@ -758,6 +755,15 @@ public final class Vm {
 
     private void push (int hc, ByteCode.Type type) {
 	push (new DataStackElement (hc, type, this));
+    }
+
+    // Pushes an identifier along with its type to the data stack, in
+    // a thread-safe manner.
+
+    private void syncedPush (int hc, ByteCode.Type type) {
+        synchronized (this) {
+            push (new DataStackElement (hc, type, this));
+        }
     }
 
     // If `varId' represents a variable, pushes its value to the stack.  
@@ -1017,8 +1023,6 @@ public final class Vm {
     private ByteCodes byteCodes = null;
     private Stack<DataStackElement> dataStack = null;
     private Stack<DataStackElement> oldDataStack = null;
-    private boolean syncedPush = false;
-    private int pushingInto = -1;
     private boolean spawned = false;
     private PrintStream out = null;
     private Hashtable<Integer, IVmOperation> vmOperations = null;
