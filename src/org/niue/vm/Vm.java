@@ -229,9 +229,15 @@ public final class Vm {
     // Pops a raw element from the data stack.  Does not
     // look in the parent dataStack.
 
-    public DataStackElement localPop () throws VmException {
+    public DataStackElement localPop (boolean synced) throws VmException {
 	try {
-	    return dataStack.pop ();
+            if (synced) {
+                synchronized (this) {
+                    return dataStack.pop ();
+                }
+            } else {
+                return dataStack.pop ();
+            }
 	} catch (EmptyStackException ex) {
             throw new VmException (EMPTY_STACK_MSG);
 	}

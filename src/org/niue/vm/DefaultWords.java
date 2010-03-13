@@ -99,6 +99,10 @@ final class DefaultWords {
 			      (StackManip.Operator.PUSH_TO));
             vmOperations.put (PUSH_ALL_TO, new StackManip 
 			      (StackManip.Operator.PUSH_ALL_TO));
+            vmOperations.put (POP_FROM, new StackManip 
+			      (StackManip.Operator.POP_FROM));
+            vmOperations.put (POP_ALL_FROM, new StackManip 
+			      (StackManip.Operator.POP_ALL_FROM));
             vmOperations.put (CLR, new StackManip (StackManip.Operator.CLR));
 
 	    // Control flow
@@ -199,6 +203,8 @@ final class DefaultWords {
     static final int TWO_DROP = "2drop".hashCode ();
     static final int PUSH_TO = "push".hashCode ();
     static final int PUSH_ALL_TO = "push-all".hashCode ();
+    static final int POP_FROM = "pop".hashCode ();
+    static final int POP_ALL_FROM = "pop-all".hashCode ();
     static final int CLR = ".clr".hashCode ();
 
     // Control flow

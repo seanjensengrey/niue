@@ -37,7 +37,7 @@ public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_TO,
-            PUSH_ALL_TO, CLR };
+            PUSH_ALL_TO, POP_FROM, POP_ALL_FROM, CLR };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -84,6 +84,12 @@ public final class StackManip implements IVmOperation {
                 break;
             case PUSH_ALL_TO:
                 pushTo (vm, true);
+                break;
+            case POP_FROM:
+                popFrom (vm, false);
+                break;
+            case POP_ALL_FROM:
+                popFrom (vm, true);
                 break;
 	    case CLR:
 		clear (vm);
@@ -176,15 +182,20 @@ public final class StackManip implements IVmOperation {
     }
 
     void pushTo (Vm vm, boolean all) throws VmException {
-        int pid = vm.popInteger ();
-        Vm targetVm = vm.getProcess (pid);
-        if (targetVm == null) {
-            throw new VmException ("Invalid process id.");
-        }
+        Vm targetVm = findVmByProcId (vm);
         if (all) {
             pushAllTo (vm, targetVm);
         } else {
             pushTo (vm, targetVm);
+        }
+    }
+
+    void popFrom (Vm vm, boolean all) throws VmException {
+        Vm srcVm = findVmByProcId (vm);
+        if (all) {
+            popAllFrom (vm, srcVm);
+        } else {
+            popFrom (vm, srcVm);
         }
     }
 
@@ -198,8 +209,9 @@ public final class StackManip implements IVmOperation {
 
     private boolean pushTo (Vm vm, Vm targetVm) {
         try {
-            DataStackElement elem = vm.localPop ();
-            if (vm.isSpawned ()) {
+            boolean synced = (targetVm.isSpawned () || vm.isSpawned ());
+            DataStackElement elem = vm.localPop (synced);
+            if (synced) {
                 targetVm.syncedPush (elem);
             } else {
                 targetVm.push (elem);
@@ -208,6 +220,34 @@ public final class StackManip implements IVmOperation {
         } catch (VmException ex) {
             return false;
         }
+    }
+
+    private void popAllFrom (Vm vm, Vm srcVm) {
+        while (popFrom (vm, srcVm)) ;
+    }
+
+    private boolean popFrom (Vm vm, Vm srcVm) {
+        try {
+            boolean synced = (srcVm.isSpawned () || vm.isSpawned ());
+            DataStackElement elem = srcVm.localPop (synced);
+            if (synced) {
+                vm.syncedPush (elem);
+            } else {
+                vm.push (elem);
+            }
+            return true;
+        } catch (VmException ex) {
+            return false;
+        }
+    }
+
+    private Vm findVmByProcId (Vm vm) throws VmException {
+        int pid = vm.popInteger ();
+        Vm targetVm = vm.getProcess (pid);
+        if (targetVm == null) {
+            throw new VmException ("Invalid process id.");
+        }
+        return targetVm;
     }
     
     private Operator operator;
