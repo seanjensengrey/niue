@@ -103,6 +103,16 @@ final class DefaultWords {
 			      (StackManip.Operator.POP_FROM));
             vmOperations.put (POP_ALL_FROM, new StackManip 
 			      (StackManip.Operator.POP_ALL_FROM));
+            vmOperations.put (SUPER_PUSH_TO, new StackManip 
+                              (StackManip.Operator.SUPER_PUSH_TO));
+            vmOperations.put (SUPER_PUSH_ALL_TO, new StackManip 
+                              (StackManip.Operator.SUPER_PUSH_ALL_TO));
+            vmOperations.put (SUPER_POP_FROM, new StackManip 
+                              (StackManip.Operator.SUPER_POP_FROM));
+            vmOperations.put (SUPER_POP_ALL_FROM, new StackManip 
+                              (StackManip.Operator.SUPER_POP_ALL_FROM));
+            vmOperations.put (SET_NEW_STACK, new StackManip 
+			      (StackManip.Operator.SET_NEW_STACK));
             vmOperations.put (CLR, new StackManip (StackManip.Operator.CLR));
 
 	    // Control flow
@@ -205,6 +215,11 @@ final class DefaultWords {
     static final int PUSH_ALL_TO = "push-all".hashCode ();
     static final int POP_FROM = "pop".hashCode ();
     static final int POP_ALL_FROM = "pop-all".hashCode ();
+    static final int SUPER_PUSH_TO = "<<".hashCode ();
+    static final int SUPER_PUSH_ALL_TO = "<<<".hashCode ();
+    static final int SUPER_POP_FROM = ">>".hashCode ();
+    static final int SUPER_POP_ALL_FROM = ">>>".hashCode ();
+    static final int SET_NEW_STACK = "::".hashCode ();
     static final int CLR = ".clr".hashCode ();
 
     // Control flow

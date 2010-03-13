@@ -37,7 +37,9 @@ public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_TO,
-            PUSH_ALL_TO, POP_FROM, POP_ALL_FROM, CLR };
+            PUSH_ALL_TO, POP_FROM, POP_ALL_FROM, 
+            SUPER_PUSH_TO, SUPER_PUSH_ALL_TO, SUPER_POP_FROM,
+            SUPER_POP_ALL_FROM, SET_NEW_STACK, CLR };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -90,6 +92,21 @@ public final class StackManip implements IVmOperation {
                 break;
             case POP_ALL_FROM:
                 popFrom (vm, true);
+                break;
+            case SUPER_PUSH_TO:
+                superPushTo (vm, false);
+                break;
+            case SUPER_PUSH_ALL_TO:
+                superPushTo (vm, true);
+                break;
+            case SUPER_POP_FROM:
+                superPopFrom (vm, false);
+                break;
+            case SUPER_POP_ALL_FROM:
+                superPopFrom (vm, true);
+                break;
+            case SET_NEW_STACK:
+                setNewStack (vm);
                 break;
 	    case CLR:
 		clear (vm);
@@ -199,6 +216,14 @@ public final class StackManip implements IVmOperation {
         }
     }
 
+    void setNewStack (Vm vm) throws VmException {
+        DataStackElement elem = vm.peek ();
+        if (elem.getType () != ByteCode.Type.VM) {
+            throw new VmException ("Expected code block.");
+        }
+        vm.setNewStack (elem.getElement ());
+    }
+
     void clear (Vm vm) {
 	vm.getDataStack ().clear ();
     }
@@ -241,6 +266,24 @@ public final class StackManip implements IVmOperation {
         }
     }
 
+    void superPushTo (Vm vm, boolean all) throws VmException {        
+        Vm parentVm = getParentVm (vm);
+        if (all) {
+            pushAllTo (vm, parentVm);
+        } else {
+            pushTo (vm, parentVm);
+        }
+    }
+
+    void superPopFrom (Vm vm, boolean all) throws VmException {        
+        Vm parentVm = getParentVm (vm);
+        if (all) {
+            popAllFrom (vm, parentVm);
+        } else {
+            popFrom (vm, parentVm);
+        }
+    }
+
     private Vm findVmByProcId (Vm vm) throws VmException {
         int pid = vm.popInteger ();
         Vm targetVm = vm.getProcess (pid);
@@ -248,6 +291,14 @@ public final class StackManip implements IVmOperation {
             throw new VmException ("Invalid process id.");
         }
         return targetVm;
+    }
+
+    private Vm getParentVm (Vm vm) throws VmException {
+        Vm parentVm = vm.getParentVm ();
+        if (parentVm == null) {
+            throw new VmException ("No parent virtual machine found.");
+        }
+        return parentVm;
     }
     
     private Operator operator;

@@ -479,7 +479,7 @@ public final class Vm {
 	if (vm == null) {
 	    throw new VmException ("Failed to get VM.");
 	}
-	vm.dataStack = this.dataStack;
+	//vm.dataStack = this.dataStack;
 	vm.run ();
 	if (discard && parentVm == null) {
 	    discardChildVm (vm, vmId);
@@ -662,6 +662,14 @@ public final class Vm {
 
     public boolean isSpawned () {
         return spawned;
+    }
+
+    public void setNewStack (int vmId) throws VmException {
+        Vm vm = vmTable.get (vmId);
+        if (vm == null) {
+            throw new VmException ("Failed to find vm.");
+        }
+        vm.dataStack = new Stack <DataStackElement> ();
     }
 
     // Gets the process ID of the root process. 
