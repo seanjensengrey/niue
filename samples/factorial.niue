@@ -1,6 +1,9 @@
-( function to find the factorial of the number on the stack) 
+"--- function to find the factorial of the number on the stack ---" . newline
+
 [ dup 1 > [ dup 1 - factorial * ] when ] 'factorial ;
 
 ( samples )
 4 factorial . ( => 24 )
 10 factorial . ( => 3628800 )
+
+newline

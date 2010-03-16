@@ -1,3 +1,5 @@
+"--- loops ---" . newline
+
 0 'count ;
 [ count 5 < ] 'check-count ;
 'check-count [ count . count 1 + 'count ; ] while
@@ -16,3 +18,4 @@ newline
 
 [ ( discard the counter ) , 'hi . ] 5 times
 
+newline

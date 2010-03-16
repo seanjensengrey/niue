@@ -1,5 +1,5 @@
-( A simple object that has protected state and 
-  message handling. )
+"--- a simple object that has protected state and message handling ---" . newline
+
 [ 'sam 'name ;; 32 'age ;; ( The default values of this object )
    ( Messages: 'get-name, 'get-age, 'set-name, 'set-age )
    dup 'get-name equals [ name . ] if
@@ -50,3 +50,5 @@ person eval 'dan ;
 
 'get-name sam , ( => sam )
 'get-age sam , ( => 32 )
+
+newline
