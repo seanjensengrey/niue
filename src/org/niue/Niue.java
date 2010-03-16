@@ -74,7 +74,7 @@ public final class Niue {
 			vm.execute (token.trim());		
 		    }
 		} catch (VmException ex) {
-		    // ex.printStackTrace ();
+                    //ex.printStackTrace ();
 		    out.println (ex.getMessage ());
 		}
 		if (vm.isStopped ()) {
@@ -105,6 +105,14 @@ public final class Niue {
         synchronized (this) {
             processTable.put (procId, vm);
         }
+    }
+
+    public Vm getProcess (int procId) throws VmException {
+        Vm vm = processTable.get (procId);
+        if (vm == null) {
+            throw new VmException ("Process " + procId + " not found.");
+        }
+        return vm;
     }
 
     private int procId = 0;

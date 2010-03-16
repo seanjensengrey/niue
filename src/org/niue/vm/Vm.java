@@ -49,6 +49,7 @@ public final class Vm {
 
     public Vm (Niue niue) {
 	initVmOperations ();
+        niue.addProcess (this.procId, this);
 	this.niue = niue;
 	dataStack = new Stack<DataStackElement> ();
 	makeRootVmStack ();

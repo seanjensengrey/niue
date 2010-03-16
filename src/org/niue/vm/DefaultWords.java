@@ -51,6 +51,7 @@ final class DefaultWords {
             vmOperations.put (DEF_VAR_STRICT, new DefVar (true));
             vmOperations.put (SPAWN, new Spawn ());
             vmOperations.put (SLEEP, new Sleep ());
+            vmOperations.put (SEND, new Send ());
             vmOperations.put (RECEIVE, new Receive ());
             vmOperations.put (SELF, new Pid (Pid.Type.SELF));
             vmOperations.put (SUPER, new Pid (Pid.Type.SUPER));
@@ -169,7 +170,8 @@ final class DefaultWords {
     static final int DEF_VAR_STRICT = ";;".hashCode ();
     static final int SPAWN = "!!".hashCode ();
     static final int SLEEP = "sleep".hashCode ();
-    static final int RECEIVE = "receive".hashCode ();
+    static final int SEND = "send".hashCode ();
+    static final int RECEIVE = "recv".hashCode ();
     static final int SELF = "self".hashCode ();
     static final int SUPER = "super".hashCode ();
     static final int LOAD = "load".hashCode ();
