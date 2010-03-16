@@ -28,6 +28,7 @@ package org.niue;
 import java.io.PrintStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Hashtable;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 
@@ -92,7 +93,22 @@ public final class Niue {
 	return ++procId;
     }
 
+    public void removeProcess (int procId) {
+        if (processTable != null) {
+            synchronized (this) {
+                processTable.remove (procId);
+            }
+        }
+    }
+
+    public void addProcess (int procId, Vm vm) {        
+        synchronized (this) {
+            processTable.put (procId, vm);
+        }
+    }
+
     private int procId = 0;
+    private Hashtable<Integer, Vm> processTable = new Hashtable<Integer, Vm> ();
     private InputStream in = null;
     private PrintStream out = null;
 }

@@ -40,12 +40,12 @@ public final class Receive implements IVmOperation {
     public void execute (Vm vm) throws VmException {
 	int count = vm.popInteger ();
 	Stack<DataStackElement> dataStack = vm.getDataStack ();
-	while (dataStack.size () < count) {	    
+	while (dataStack.size () < count) {
 	    try {
 		Thread.sleep (10);
 	    } catch (InterruptedException ex) {
 		throw new VmException ("Error while waiting for " +
-				       "data to arrive on stack");
+				       "data on stack");
 	    }
 	}
     }

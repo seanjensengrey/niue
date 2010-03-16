@@ -537,7 +537,7 @@ public final class Vm {
         }
         int procId = procController.add (vm);
         // The new process is mapped into a process table.  
-        addProcess (procId, vm);
+        niue.addProcess (procId, vm);
         pushInteger (procId);
     }
 
@@ -545,38 +545,6 @@ public final class Vm {
 
     public ByteCodes getByteCodes () {
         return byteCodes;
-    }
-
-    // Gets the virtual machine identified by the process ID. 
-
-    public Vm getProcess (int procId) {
-        if (procId == 0) {
-            return getRootProcess ();
-        } else {
-	    Vm vm = processTable.get (procId);
-            if (vm == null) {
-                if (parentVm != null) {
-                    return parentVm.getProcess (procId);
-                }
-            } else {
-		return vm;
-	    }
-        }
-	return null;
-    }
-
-    // Removes a process from the process table. 
-
-    public void removeProcess (int procId) {
-        if (processTable != null) {
-            synchronized (this) {
-                if (processTable.remove (procId) == null) {
-                    if (parentVm != null) {
-                        parentVm.removeProcess (procId);
-                    }
-                }
-            }
-        }
     }
 
     // Sets this virtual machine's process ID. 
@@ -670,25 +638,6 @@ public final class Vm {
             throw new VmException ("Failed to find vm.");
         }
         vm.dataStack = new Stack <DataStackElement> ();
-    }
-
-    // Gets the process ID of the root process. 
-
-    private Vm getRootProcess () {
-        if (parentVm == null) {
-            return this;
-        } else {
-            return parentVm.getRootProcess ();
-        }
-    }
-
-    // Maps a process to the process table. 
-
-    private void addProcess (int procId, Vm vm) {
-        if (processTable == null) {
-            processTable = new Hashtable<Integer, Vm> ();
-        }
-        processTable.put (procId, vm);
     }
 
     // Updates the mapping of a variable.  If the variable is mapped in
@@ -1050,7 +999,6 @@ public final class Vm {
     private Hashtable<Integer, DataStackElement> vars = 
 	new Hashtable<Integer, DataStackElement> ();
     private ProcessController procController = null;
-    private Hashtable<Integer, Vm> processTable = null;
     private int procId = 0;
     private Stack<Vm> vmStack = null;
 
