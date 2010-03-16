@@ -95,14 +95,6 @@ final class DefaultWords {
 			      (StackManip.Operator.TWO_OVER));
             vmOperations.put (TWO_DROP, new StackManip 
 			      (StackManip.Operator.TWO_DROP));
-            vmOperations.put (PUSH_TO, new StackManip 
-			      (StackManip.Operator.PUSH_TO));
-            vmOperations.put (PUSH_ALL_TO, new StackManip 
-			      (StackManip.Operator.PUSH_ALL_TO));
-            vmOperations.put (POP_FROM, new StackManip 
-			      (StackManip.Operator.POP_FROM));
-            vmOperations.put (POP_ALL_FROM, new StackManip 
-			      (StackManip.Operator.POP_ALL_FROM));
             vmOperations.put (SUPER_PUSH_TO, new StackManip 
                               (StackManip.Operator.SUPER_PUSH_TO));
             vmOperations.put (SUPER_PUSH_ALL_TO, new StackManip 
@@ -216,10 +208,6 @@ final class DefaultWords {
     static final int TWO_DUP = "2dup".hashCode ();
     static final int TWO_OVER = "2over".hashCode ();
     static final int TWO_DROP = "2drop".hashCode ();
-    static final int PUSH_TO = "push".hashCode ();
-    static final int PUSH_ALL_TO = "push-all".hashCode ();
-    static final int POP_FROM = "pop".hashCode ();
-    static final int POP_ALL_FROM = "pop-all".hashCode ();
     static final int SUPER_PUSH_TO = "<<".hashCode ();
     static final int SUPER_PUSH_ALL_TO = "<<<".hashCode ();
     static final int SUPER_POP_FROM = ">>".hashCode ();

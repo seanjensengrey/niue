@@ -36,8 +36,7 @@ import java.math.BigInteger;
 public final class StackManip implements IVmOperation {
     
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
-	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, PUSH_TO,
-            PUSH_ALL_TO, POP_FROM, POP_ALL_FROM, 
+	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, 
             SUPER_PUSH_TO, SUPER_PUSH_ALL_TO, SUPER_POP_FROM,
             SUPER_POP_ALL_FROM, SET_NEW_STACK, CLR };
 
@@ -81,18 +80,6 @@ public final class StackManip implements IVmOperation {
 	    case TWO_DROP:
 		twoDrop (vm);
 		break;
-            case PUSH_TO:
-                pushTo (vm, false);
-                break;
-            case PUSH_ALL_TO:
-                pushTo (vm, true);
-                break;
-            case POP_FROM:
-                popFrom (vm, false);
-                break;
-            case POP_ALL_FROM:
-                popFrom (vm, true);
-                break;
             case SUPER_PUSH_TO:
                 superPushTo (vm, false);
                 break;
@@ -198,24 +185,6 @@ public final class StackManip implements IVmOperation {
 	vm.pop ();
     }
 
-    void pushTo (Vm vm, boolean all) throws VmException {
-        Vm targetVm = findVmByProcId (vm);
-        if (all) {
-            pushAllTo (vm, targetVm);
-        } else {
-            pushTo (vm, targetVm);
-        }
-    }
-
-    void popFrom (Vm vm, boolean all) throws VmException {
-        Vm srcVm = findVmByProcId (vm);
-        if (all) {
-            popAllFrom (vm, srcVm);
-        } else {
-            popFrom (vm, srcVm);
-        }
-    }
-
     void setNewStack (Vm vm) throws VmException {
         DataStackElement elem = vm.peek ();
         if (elem.getType () != ByteCode.Type.VM) {
@@ -226,6 +195,24 @@ public final class StackManip implements IVmOperation {
 
     void clear (Vm vm) {
 	vm.getDataStack ().clear ();
+    }
+
+    void superPushTo (Vm vm, boolean all) throws VmException {        
+        Vm parentVm = getParentVm (vm);
+        if (all) {
+            pushAllTo (vm, parentVm);
+        } else {
+            pushTo (vm, parentVm);
+        }
+    }
+
+    void superPopFrom (Vm vm, boolean all) throws VmException {        
+        Vm parentVm = getParentVm (vm);
+        if (all) {
+            popAllFrom (vm, parentVm);
+        } else {
+            popFrom (vm, parentVm);
+        }
     }
 
     private void pushAllTo (Vm vm, Vm targetVm) {
@@ -264,33 +251,6 @@ public final class StackManip implements IVmOperation {
         } catch (VmException ex) {
             return false;
         }
-    }
-
-    void superPushTo (Vm vm, boolean all) throws VmException {        
-        Vm parentVm = getParentVm (vm);
-        if (all) {
-            pushAllTo (vm, parentVm);
-        } else {
-            pushTo (vm, parentVm);
-        }
-    }
-
-    void superPopFrom (Vm vm, boolean all) throws VmException {        
-        Vm parentVm = getParentVm (vm);
-        if (all) {
-            popAllFrom (vm, parentVm);
-        } else {
-            popFrom (vm, parentVm);
-        }
-    }
-
-    private Vm findVmByProcId (Vm vm) throws VmException {
-        int pid = vm.popInteger ();
-        Vm targetVm = vm.getProcess (pid);
-        if (targetVm == null) {
-            throw new VmException ("Invalid process id.");
-        }
-        return targetVm;
     }
 
     private Vm getParentVm (Vm vm) throws VmException {
