@@ -38,7 +38,7 @@ public final class StackManip implements IVmOperation {
     public enum Operator { LEN, SWAP, SWAP_AT, DUP, OVER, ROT, DROP,
 	    TWO_SWAP, TWO_DUP, TWO_OVER, TWO_DROP, 
             SUPER_PUSH_TO, SUPER_PUSH_ALL_TO, SUPER_POP_FROM,
-            SUPER_POP_ALL_FROM, SET_NEW_STACK, CLR };
+            SUPER_POP_ALL_FROM, CLR };
 
     public StackManip (Operator opr) {
 	operator = opr;
@@ -91,9 +91,6 @@ public final class StackManip implements IVmOperation {
                 break;
             case SUPER_POP_ALL_FROM:
                 superPopFrom (vm, true);
-                break;
-            case SET_NEW_STACK:
-                setNewStack (vm);
                 break;
 	    case CLR:
 		clear (vm);
@@ -183,14 +180,6 @@ public final class StackManip implements IVmOperation {
     void twoDrop (Vm vm) throws VmException {
 	vm.pop ();
 	vm.pop ();
-    }
-
-    void setNewStack (Vm vm) throws VmException {
-        DataStackElement elem = vm.peek ();
-        if (elem.getType () != ByteCode.Type.VM) {
-            throw new VmException ("Expected code block.");
-        }
-        vm.setNewStack (elem.getElement ());
     }
 
     void clear (Vm vm) {

@@ -57,11 +57,16 @@ public final class Vm {
 
     // Used to create a child virtual machine
 
-    private Vm (Vm parent) {
+    private Vm (Vm parent, boolean hasNewStack) {
 	initVmOperations ();
 	parentVm = parent;
 	niue = parentVm.niue;
-        dataStack = parentVm.dataStack;
+	this.hasNewStack = hasNewStack;
+	if (!hasNewStack) {
+	    dataStack = parentVm.dataStack;
+	} else {
+	    dataStack = new Stack<DataStackElement> ();
+	}
 	vmStack = parentVm.vmStack;
 	out = parent.out;
     }
@@ -471,7 +476,7 @@ public final class Vm {
 	if (compilationMode) byteCodes = null;
     }
 
-    // Retrieves the virtual machines identified by vmId from the
+    // Retrieves the virtual machine identified by vmId from the
     // child vm table and executes it. 
 
     public void runChildVm (int vmId, boolean discard) 
@@ -480,7 +485,9 @@ public final class Vm {
 	if (vm == null) {
 	    throw new VmException ("Failed to get VM.");
 	}
-	//vm.dataStack = this.dataStack;
+	if (!vm.hasNewStack) {
+	    vm.dataStack = this.dataStack;
+	}
 	vm.run ();
 	if (discard && parentVm == null) {
 	    discardChildVm (vm, vmId);
@@ -631,14 +638,6 @@ public final class Vm {
 
     public boolean isSpawned () {
         return spawned;
-    }
-
-    public void setNewStack (int vmId) throws VmException {
-        Vm vm = vmTable.get (vmId);
-        if (vm == null) {
-            throw new VmException ("Failed to find vm.");
-        }
-        vm.dataStack = new Stack <DataStackElement> ();
     }
 
     // Updates the mapping of a variable.  If the variable is mapped in
@@ -802,9 +801,13 @@ public final class Vm {
 
     private void executeToken (String token) throws VmException {
 	int hc = token.hashCode ();
-	if (hc == BLOCK_START) {
-	    blockStart ();
-	} else if (hc == BLOCK_END) {
+	if (hc == BLOCK_START || hc == BLOCK_START_NEW_STACK) {
+	    if (hc == BLOCK_START) {
+		blockStart (false);
+	    } else {
+		blockStart (true);
+	    }
+	} else if (hc == BLOCK_END || hc == BLOCK_END_NEW_STACK) {
 	    blockEnd ();	
 	} else {
 	    ByteCode bc = compileToken (token);
@@ -820,8 +823,8 @@ public final class Vm {
     // compilation mode turned on and further tokens are re-directed 
     // into it. 
 
-    private void blockStart () {
-	Vm currentVm = new Vm (this);
+    private void blockStart (boolean hasNewStack) {
+	Vm currentVm = new Vm (this, hasNewStack);
 	currentVm.setCompilationMode (true);
 	vmStack.push (currentVm);
     }
@@ -988,6 +991,7 @@ public final class Vm {
     private Stack<DataStackElement> dataStack = null;
     private Stack<DataStackElement> oldDataStack = null;
     private boolean spawned = false;
+    private boolean hasNewStack = false;
     private PrintStream out = null;
     private Hashtable<Integer, IVmOperation> vmOperations = null;
     private Hashtable<Integer, String> stringTable = 
@@ -1008,4 +1012,6 @@ public final class Vm {
     static final int COLON_DEF_END = ";".hashCode ();
     static final int BLOCK_START = "[".hashCode ();
     static final int BLOCK_END = "]".hashCode ();
+    static final int BLOCK_START_NEW_STACK = "{".hashCode ();
+    static final int BLOCK_END_NEW_STACK = "}".hashCode ();
 }
