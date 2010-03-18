@@ -5,6 +5,7 @@
 "person-obj.niue" load newline
 "cond.niue" load newline
 "loops.niue" load newline
+"fizzbuzz.niue" load newline
 "spawn.niue" load newline
 
 newline

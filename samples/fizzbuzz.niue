@@ -1,0 +1,15 @@
+"=> fizzbuzz" . newline
+( print 1-N numbers. if a number is divisible by 3 print Fizz, if it is divisible by print 5 ,
+  if it is divisible by both 3 and 5 print FizzBuzz. )
+
+[ [ dup 0 > [ false swap dup dup 
+              3 mod 0 = [ 'Fizz .ns rot , true swap rot ] when
+              5 mod 0 = [ 'Buzz .ns swap , true swap ] when space 
+              swap [ , ] if [ . ] else
+            ] if
+            [ , ] else 
+  ] swap times 
+] 'fizzbuzz ;
+
+( test: print from 1-50 )
+50 fizzbuzz
