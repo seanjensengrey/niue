@@ -39,12 +39,20 @@ public final class Pop implements IVmOperation {
         print = p;
     }
 
+    public Pop (boolean p, boolean ps) {
+        print = p;
+        printSpace = ps;
+    }
+
     public void execute (Vm vm) throws VmException {
 	DataStackElement elem = vm.pop ();
         if (print) {
-            vm.write (vm.getDataStackElementValue (elem) + ' ');        
+            String val = vm.getDataStackElementValue (elem);
+            if (printSpace) val += ' ';
+            vm.write (val);        
         }
     }
     
     private boolean print = false;
+    private boolean printSpace = true;
 }

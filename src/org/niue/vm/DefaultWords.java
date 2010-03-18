@@ -44,6 +44,7 @@ final class DefaultWords {
             vmOperations.put (NEWLINE, new Cr ());
             vmOperations.put (DOT_QUIT, new Quit ());
             vmOperations.put (DOT, new Pop (true));
+            vmOperations.put (DOT_NS, new Pop (true, false));
             vmOperations.put (DISCARD, new Pop (false));
             vmOperations.put (FORGET, new Forget ());
             vmOperations.put (RUN, new Run ());
@@ -161,6 +162,7 @@ final class DefaultWords {
     static final int DOT_S = ".s".hashCode ();
     static final int EMIT = "emit".hashCode ();
     static final int DOT = ".".hashCode ();
+    static final int DOT_NS = ".ns".hashCode ();
     static final int DISCARD = ",".hashCode ();
     static final int FORGET = "forget".hashCode ();
     static final int RUN = "!".hashCode ();
