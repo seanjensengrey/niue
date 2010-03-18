@@ -1,4 +1,4 @@
-"--- loops ---" . newline
+"=> loops.niue" . newline
 
 0 'count ;
 [ count 5 < ] 'check-count ;

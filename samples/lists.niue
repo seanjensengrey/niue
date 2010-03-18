@@ -1,4 +1,6 @@
-"--- a lisp like map function ---" . newline
+"=> lists.niue" . newline
+
+( a lisp like map function )
 
 [ 'opr ; [ , opr ! ]  len 1 - times ] 'map ;
 

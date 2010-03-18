@@ -1,4 +1,6 @@
-"--- tiny processes and IPC ---" . newline
+"=> spawn.niue" . newline 
+
+( tiny processes and IPC )
 
 3 [ 4 + . ] !! .clr
 3 [ 4 + 1 super send ] !! , , 1 recv . .clr

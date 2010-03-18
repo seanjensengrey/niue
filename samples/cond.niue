@@ -1,4 +1,4 @@
-"--- if condition ---" . newline
+"=> cond.niue" . newline
 
 31 'age ;
 [ age dup ] 'age-is ;

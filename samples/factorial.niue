@@ -1,4 +1,4 @@
-"--- function to find the factorial of the number on the stack ---" . newline
+"=> factorial.niue" . newline
 
 [ dup 1 > [ dup 1 - factorial * ] when ] 'factorial ;
 

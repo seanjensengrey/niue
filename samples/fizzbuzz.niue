@@ -1,4 +1,4 @@
-"=> fizzbuzz" . newline
+"=> fizzbuzz.niue" . newline
 ( print 1-N numbers. if a number is divisible by 3 print Fizz, if it is divisible by print 5 ,
   if it is divisible by both 3 and 5 print FizzBuzz. )
 
