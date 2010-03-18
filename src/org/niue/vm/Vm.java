@@ -268,6 +268,14 @@ public final class Vm {
 	}
     }
 
+    // Writes the character to the virtual machine's output stream.
+
+    public void write (char c) {
+        if (out != null) {
+            out.print (c);
+        }
+    }
+
     // Writes the string to the virtual machine's output stream.
 
     public void write (String s) {
@@ -282,14 +290,6 @@ public final class Vm {
     public void writeLine (String s) {
 	if (out != null) {
 	    out.println (s);
-	}
-    }
-
-    // Writes a newline to the virtual machine's output stream. 
-
-    public void writeLine () {
-	if (out != null) {
-	    out.println ();
 	}
     }
 

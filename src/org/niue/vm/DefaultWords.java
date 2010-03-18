@@ -41,7 +41,8 @@ final class DefaultWords {
             // Contract utilities, VM control.
             vmOperations.put (DOT_S, new PrintStack ());
             vmOperations.put (EMIT, new Emit ());
-            vmOperations.put (NEWLINE, new Cr ());
+            vmOperations.put (NEWLINE, new CharOutput ('\n'));
+            vmOperations.put (SPACE, new CharOutput (' '));
             vmOperations.put (DOT_QUIT, new Quit ());
             vmOperations.put (DOT, new Pop (true));
             vmOperations.put (DOT_NS, new Pop (true, false));
@@ -158,6 +159,7 @@ final class DefaultWords {
 
     // Console utilities, VM control.
     static final int NEWLINE = "newline".hashCode ();
+    static final int SPACE = "space".hashCode ();
     static final int DOT_QUIT = ".q".hashCode ();
     static final int DOT_S = ".s".hashCode ();
     static final int EMIT = "emit".hashCode ();

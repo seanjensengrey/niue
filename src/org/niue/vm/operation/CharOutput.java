@@ -29,8 +29,15 @@ import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 
-public final class Cr implements IVmOperation {
-    public void execute (Vm vm) throws VmException {
-	vm.writeLine ();
+public final class CharOutput implements IVmOperation {
+
+    public CharOutput (char c) {
+        this.c = c;
     }
+
+    public void execute (Vm vm) throws VmException {
+	vm.write (c);
+    }
+
+    private char c = 0;
 }
