@@ -644,16 +644,12 @@ public final class Vm {
     // the parent virtual machine, that is updated. 
 
     private boolean updateVar (int hc, DataStackElement var) {
-	boolean check = false;
-	if (parentVm == null) check = true;
-	else {
-	    if (!spawned) check = !parentVm.updateVar (hc, var);
-	    else check = true;
-	}
-	if (check) {
-	    if (vars.get (hc) != null) {
-		vars.put (hc, var);
-		return true;
+	if (vars.get (hc) != null) {
+	    vars.put (hc, var);
+	    return true;
+	} else {
+	    if (parentVm != null) {
+		return parentVm.updateVar (hc, var);
 	    }
 	}
 	return false;
