@@ -1,0 +1,18 @@
+
+( Data representation - previously done by XML )
+
+[ 'name "Jay" 'basic-pay 12000 'allowance 5000 'hra 2000 ] 'jay ;
+[ 'name "Sam" 'basic-pay 11000 'allowance 6000 'hra 1670 ] 'sam ;
+
+( Gross pay and income tax computations - previously done by Java )
+
+[ 'basic-pay get 'allowance get + 'hra get + ] 'gross-pay ; 
+[ 'basic-pay get 'allowance get +  .2  * ] 'income-tax ;
+[ 'name get . "=> " . newline 
+  "   Gross pay:" . gross-pay . newline
+  "   Income tax:" . income-tax . newline ] 'compute-and-print ;
+
+jay compute-and-print
+.clr ( clear the stack before next computation )
+sam compute-and-print
+.clr 
