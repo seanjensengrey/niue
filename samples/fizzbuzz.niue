@@ -1,15 +1,22 @@
 "=> fizzbuzz.niue" . newline
-( print 1-N numbers. if a number is divisible by 3 print Fizz, if it is divisible by print 5 ,
-  if it is divisible by both 3 and 5 print FizzBuzz. )
+( For 1-N numbers: if the number is divisible by 3 prints "Fizz", 
+  if it is divisible by 5 prints "Buzz",  if it is divisible by both 3 and 5 
+  print "FizzBuzz" else the number is printed. )
 
-[ [ dup 0 > [ false swap dup dup 
-              3 mod 0 = [ 'Fizz .ns rot , true swap rot ] when
-              5 mod 0 = [ 'Buzz .ns swap , true swap ] when space 
-              swap [ , ] if [ . ] else
-            ] if
-            [ , ] else 
-  ] swap times 
-] 'fizzbuzz ;
+( fizzbuzz - entrypoint ) 
 
-( test: print from 1-50 )
-50 fizzbuzz
+[ >0 [ print-fizzbuzz-or-number ] if [ , ] else ] 'fizzbuzz ;
+
+( helper words )
+
+[ dup 0 > ] '>0 ;
+[ flag-and-prepare-number fizz buzz  or-number ] 'print-fizzbuzz-or-number ;
+[ false swap dup dup ] 'flag-and-prepare-number ;
+[ 3 mod 0 = [ 'Fizz .ns rot , true swap rot ] when ] 'fizz ;
+[ 5 mod 0 = [ 'Buzz .ns swap , true swap ] when space ] 'buzz ;
+[ swap [ , ] if [ . ] else ] 'or-number ;
+
+
+( test )
+
+[ fizzbuzz ] 50 times
