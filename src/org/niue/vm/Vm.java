@@ -170,6 +170,18 @@ public final class Vm {
 	}
     }
 
+    // Sets the element at index i in the dataStack.
+    // The index is reversed before calling dataStack.set (). 
+
+    public void set (int i, DataStackElement elem) throws VmException {
+	try {
+            i = dataStack.size () - (i + 1);
+            dataStack.set (i, elem);
+	} catch (ArrayIndexOutOfBoundsException ex) {
+	    throw new VmException ("Invalid stack index.");
+	}
+    }
+
     // Pops an element from the data stack.  Throws an exception if
     // it is not an integer.  Returns the integer value.  Note that
     // integers are stored directly on the stack.  They need not be 

@@ -25,7 +25,6 @@
 
 package org.niue.vm.operation;
 
-import java.util.Collections;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
@@ -123,7 +122,10 @@ public final class StackManip implements IVmOperation {
     static void swap_at (Vm vm) throws VmException {
 	int j = vm.popInteger ();
 	int i = vm.popInteger ();
-	Collections.swap (vm.getDataStack (), i, j);
+        DataStackElement elem1 = vm.at (j);
+        DataStackElement elem2 = vm.at (i);
+        vm.set (i, elem1);
+        vm.set (j, elem2);
     }
 
     void dup (Vm vm) throws VmException {
