@@ -144,7 +144,11 @@ public final class ListOprs implements IVmOperation {
 	    int idx = Collections.binarySearch ((List) dataStack,
 						(Object) 
 						dataStack.pop ());
-	    vm.pushInteger (idx);	    
+	    if (idx < 0) {
+		vm.pushInteger (-1);
+	    } else {
+		vm.pushInteger ((dataStack.size () - 1) - idx);		
+	    }
 	} catch (ClassCastException ex) {
 	    throw new VmException (ex.getMessage ());
 	}
