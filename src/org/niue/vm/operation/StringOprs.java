@@ -33,7 +33,7 @@ public final class StringOprs implements IVmOperation {
     
     public enum Operator { STR_LEN, STR_AT, STR_EQ, STR_EQI,
 	    STR_TOUPPER, STR_TOLOWER, STR_TRIM, SUBSTR, STR_REPL,
-            STR_REPL_ALL};
+            STR_REPL_ALL, STR_FIND};
     
     public StringOprs (Operator opr) {
         operator = opr;
@@ -107,6 +107,12 @@ public final class StringOprs implements IVmOperation {
                 vm.pushString (src.replaceAll (regex, replacement));
                 break;
             }
+	case STR_FIND:
+	    {
+		String findStr = vm.popString ();
+		vm.pushInteger (str1.indexOf (findStr));
+		break;
+	    }
 	}
     }
     

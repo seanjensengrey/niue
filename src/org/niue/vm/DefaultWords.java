@@ -139,6 +139,8 @@ final class DefaultWords {
 			      (StringOprs.Operator.STR_REPL));
             vmOperations.put (STR_REPL_ALL, new StringOprs 
 			      (StringOprs.Operator.STR_REPL_ALL));
+            vmOperations.put (STR_FIND, new StringOprs 
+			      (StringOprs.Operator.STR_FIND));
 	    
 	    // List operations on the stack
 	    vmOperations.put (AT, new ListOprs (ListOprs.Operator.AT));
@@ -239,6 +241,7 @@ final class DefaultWords {
     static final int SUBSTR = "substring".hashCode ();
     static final int STR_REPL = "str-replace".hashCode ();
     static final int STR_REPL_ALL = "str-replace-all".hashCode ();
+    static final int STR_FIND = "str-find".hashCode ();
 
     // List operations on the stack
     static final int AT = "at".hashCode ();

@@ -6,6 +6,7 @@
 "cond.niue" load newline
 "loops.niue" load newline
 "fizzbuzz.niue" load newline
+"substring.niue" load newline
 "spawn.niue" load newline
 
 newline
