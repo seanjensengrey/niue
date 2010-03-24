@@ -82,12 +82,12 @@ public final class ListOprs implements IVmOperation {
 
     private void at (Vm vm) throws VmException {
 	Stack<DataStackElement> dataStack = vm.getDataStack ();
-	vm.push (dataStack.get (vm.popInteger ()));
+	vm.push (vm.at (vm.popInteger ()));
     }
 
     private void remove (Vm vm) throws VmException {
 	Stack<DataStackElement> dataStack = vm.getDataStack ();
-	dataStack.remove (vm.popInteger ());
+	vm.remove (vm.popInteger ());
     }
 
     private void remove_all (Vm vm) throws VmException {

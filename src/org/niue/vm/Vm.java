@@ -164,7 +164,7 @@ public final class Vm {
 
     public DataStackElement at (int i) throws VmException {
 	try {
-	    return dataStack.elementAt (dataStack.size () - (i + 1));
+	    return dataStack.elementAt (normalizeIndex (i));
 	} catch (ArrayIndexOutOfBoundsException ex) {
 	    throw new VmException ("Invalid stack index.");
 	}
@@ -175,11 +175,21 @@ public final class Vm {
 
     public void set (int i, DataStackElement elem) throws VmException {
 	try {
-            i = dataStack.size () - (i + 1);
-            dataStack.set (i, elem);
+            dataStack.set (normalizeIndex (i), elem);
 	} catch (ArrayIndexOutOfBoundsException ex) {
 	    throw new VmException ("Invalid stack index.");
 	}
+    }
+
+    // Removes the element at index i from the dataStack.
+    // The index is reversed before calling dataStack.set (). 
+
+    public void remove (int i) throws VmException {
+	try {
+	    dataStack.remove (normalizeIndex (i));
+	} catch (ArrayIndexOutOfBoundsException ex) {
+	    throw new VmException ("Invalid stack index.");
+	}	    
     }
 
     // Pops an element from the data stack.  Throws an exception if
@@ -980,6 +990,13 @@ public final class Vm {
 	makeRootVmStack ();
 	spawned = true;
     }	
+
+    // Changes i to, so that it will act as an index into
+    // dataStack, starting at the top.
+
+    private int normalizeIndex (int i) {
+	return dataStack.size () - (i + 1);
+    }
 
     // Creates a new data stack with elements in `stack'. 
 
