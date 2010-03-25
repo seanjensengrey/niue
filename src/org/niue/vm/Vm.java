@@ -701,8 +701,29 @@ public final class Vm {
     // Removes a child virtual machine from the table. 
 
     private void discardChildVm (Vm vm, int vmId) {
-	vm.cleanup ();
-	vmTable.remove (vmId);
+	if (!vmIsCopy (vm)) {
+	    vm.cleanup ();
+	    vmTable.remove (vmId);
+	}
+    }
+
+    // Returns true if the vm object references another vm in the
+    // data stack.
+
+    private boolean vmIsCopy (Vm vm) {
+	int len = dataStack.size ();
+	for (int i = 0; i < len; ++i) {
+	    DataStackElement e = dataStack.elementAt (i);
+	    if (e.getType () == ByteCode.Type.VM) {
+		Vm exVm = vmTable.get (e.getElement ());
+		if (exVm != null) {
+		    if (exVm == vm) {
+			return true;
+		    }
+		}
+	    }
+	}
+	return false;
     }
 
     // Cleans up the virtual machine's data structures.
