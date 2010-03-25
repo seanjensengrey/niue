@@ -28,18 +28,20 @@ package org.niue.vm.operation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.ArrayList;
 import org.niue.vm.IVmOperation;
 import org.niue.vm.Vm;
 import org.niue.vm.VmException;
 import org.niue.vm.DataStackElement;
+import org.niue.vm.ByteCode;
 
 // Implements some words that treats the data stack as a 
 // linked list. 
 
 public final class ListOprs implements IVmOperation {
     
-    public enum Operator { AT, REMOVE, REMOVE_ALL, GET, SET,
-	    REVERSE, BSEARCH, SORT, REPLACE, REPLACE_ALL};
+    public enum Operator { AT, REMOVE_AT, REMOVE_ALL, REMOVE, REMOVE_IF, 
+	    GET, SET, REVERSE, BSEARCH, SORT, REPLACE, REPLACE_ALL};
     
     public ListOprs (Operator opr) {
         operator = opr;
@@ -50,12 +52,18 @@ public final class ListOprs implements IVmOperation {
 	case AT:
             at (vm);
             break;
-	case REMOVE:
-            remove (vm);
+	case REMOVE_AT:
+            remove_at (vm);
             break;
 	case REMOVE_ALL:
             remove_all (vm);
             break;
+	case REMOVE:
+	    remove (vm);
+	    break;
+	case REMOVE_IF:
+	    remove_if (vm);
+	    break;
 	case GET:
             get (vm);
             break;
@@ -85,14 +93,52 @@ public final class ListOprs implements IVmOperation {
 	vm.push (vm.at (vm.popInteger ()));
     }
 
-    private void remove (Vm vm) throws VmException {
+    private void remove_at (Vm vm) throws VmException {
 	Stack<DataStackElement> dataStack = vm.getDataStack ();
 	vm.remove (vm.popInteger ());
     }
 
     private void remove_all (Vm vm) throws VmException {
+	DataStackElement elem = vm.pop ();
 	Stack<DataStackElement> dataStack = vm.getDataStack ();
-	dataStack.removeAllElements ();
+	int len = dataStack.size ();
+	for (int i = 0; i < len; ++i) {
+	    DataStackElement e = dataStack.elementAt (i);
+            if (e.equals (elem)) {
+                dataStack.removeElementAt (i);
+                len = dataStack.size ();
+            }
+	}
+    }
+
+    private void remove (Vm vm) throws VmException {
+	DataStackElement elem = vm.pop ();
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	dataStack.remove (elem);
+    }
+
+    private void remove_if (Vm vm) throws VmException {
+	DataStackElement codeBlock = vm.pop ();
+	Stack<DataStackElement> dataStack = vm.getDataStack ();
+	ArrayList<DataStackElement> itemsToRemove = 
+	    new ArrayList<DataStackElement> ();
+	Run run = new Run ();
+	int len = dataStack.size ();
+	for (int i = 0; i < len; ++i) {
+	    DataStackElement e = dataStack.elementAt (i);
+	    dataStack.push (e);
+	    run.run (vm, codeBlock, false);
+	    if (vm.popBoolean ()) {
+		itemsToRemove.add (e);
+	    }
+	}
+	if (codeBlock.getType () == ByteCode.Type.VM) {
+	    vm.discardChildVm (codeBlock.getElement ());
+	}
+	len = itemsToRemove.size ();
+	for (int i = 0; i < len; ++i) {
+	    dataStack.remove (itemsToRemove.get (i));
+	}
     }
 
     private void get (Vm vm) throws VmException {

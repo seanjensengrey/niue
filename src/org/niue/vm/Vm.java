@@ -510,7 +510,7 @@ public final class Vm {
 	}
     }
 
-    // Removes a child from the virtual machine's table.
+    // Removes a child from the virtual machines table.
 
     public void discardChildVm (int vmId) {
 	Vm vm = vmTable.get (vmId);

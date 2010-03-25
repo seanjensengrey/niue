@@ -52,8 +52,7 @@ public class DataStackElement implements Comparable {
         this.vm = elem.vm;
     }
 
-    @Override
-    public int compareTo (Object obj) {
+    @Override public int compareTo (Object obj) {
 	DataStackElement e = (DataStackElement) obj;
 	Cmpr.Operator opr = Cmpr.Operator.EQ;
 	if (e.type == ByteCode.Type.STRING 
@@ -76,6 +75,16 @@ public class DataStackElement implements Comparable {
 	    return -3;
 	}
 	return 0;
+    }
+
+    @Override public boolean equals (Object obj) {
+	if (obj == null) return false;
+	if (obj == this) return true;
+	if (obj instanceof DataStackElement) {
+	    DataStackElement e = (DataStackElement)obj;
+	    return (compareTo (e) == 0);
+	}
+	return false;
     }
 
     private int element;

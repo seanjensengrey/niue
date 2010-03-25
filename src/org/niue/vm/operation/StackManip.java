@@ -110,7 +110,7 @@ public final class StackManip implements IVmOperation {
         vm.pushInteger (vm.getDataStack ().size ());
     }
 
-    static void swap (Vm vm) throws VmException {
+    void swap (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.at (0);
 	DataStackElement elem1 = vm.at (1);
 	vm.pop ();
@@ -128,11 +128,11 @@ public final class StackManip implements IVmOperation {
         vm.set (j, elem2);
     }
 
-    void dup (Vm vm) throws VmException {
+    static void dup (Vm vm) throws VmException {
 	DataStackElement elem1 = vm.peek ();
 	vm.push (elem1);
     }
-
+    
     void over (Vm vm) throws VmException {
 	DataStackElement elem2 = vm.at (1);
 	vm.push (elem2);

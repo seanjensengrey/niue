@@ -34,10 +34,13 @@ import org.niue.vm.ByteCode;
 public final class Run implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
-	DataStackElement elem = vm.pop ();
+	run (vm, vm.pop (), true);
+    }
+
+    void run (Vm vm, DataStackElement elem, boolean discard) throws VmException {
 	ByteCode.Type type = elem.getType ();
 	if (type == ByteCode.Type.VM) {
-	    vm.runChildVm (elem.getElement (), true);
+	    vm.runChildVm (elem.getElement (), discard);
 	} else if (type == ByteCode.Type.STRING) {
 	    vm.executeWord (elem.getElement ());
 	} else {

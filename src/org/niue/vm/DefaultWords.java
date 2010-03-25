@@ -144,10 +144,14 @@ final class DefaultWords {
 	    
 	    // List operations on the stack
 	    vmOperations.put (AT, new ListOprs (ListOprs.Operator.AT));
-	    vmOperations.put (REMOVE, new ListOprs 
-			      (ListOprs.Operator.REMOVE));
+	    vmOperations.put (REMOVE_AT, new ListOprs 
+			      (ListOprs.Operator.REMOVE_AT));
 	    vmOperations.put (REMOVE_ALL, new ListOprs 
 			      (ListOprs.Operator.REMOVE_ALL));
+	    vmOperations.put (REMOVE, new ListOprs 
+			      (ListOprs.Operator.REMOVE));
+	    vmOperations.put (REMOVE_IF, new ListOprs 
+			      (ListOprs.Operator.REMOVE_IF));
 	    vmOperations.put (GET, new ListOprs (ListOprs.Operator.GET));
 	    vmOperations.put (SET, new ListOprs (ListOprs.Operator.SET));
 	    vmOperations.put (REVERSE, new ListOprs (ListOprs.Operator.REVERSE));
@@ -245,8 +249,10 @@ final class DefaultWords {
 
     // List operations on the stack
     static final int AT = "at".hashCode ();
-    static final int REMOVE = "remove".hashCode ();
+    static final int REMOVE_AT = "remove-at".hashCode ();
     static final int REMOVE_ALL = "remove-all".hashCode ();
+    static final int REMOVE = "remove".hashCode ();
+    static final int REMOVE_IF = "remove-if".hashCode ();
     static final int GET = "get".hashCode (); // Treats the stack as a plist.
     static final int SET = "set".hashCode (); // Treats the stack as a plist.
     static final int REVERSE = "reverse".hashCode ();
