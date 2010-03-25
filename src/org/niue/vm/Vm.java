@@ -284,7 +284,7 @@ public final class Vm {
 	if (!executeVar (wordId)) {
 	    IVmOperation opr = getOperation (wordId);
 	    if (opr == null) {
-		throw new VmException ("Invalid VM operation.");
+		throw new VmException ("Invalid VM operation - " + currentToken);
 	    }
 	    opr.execute (this);
 	}
@@ -478,13 +478,7 @@ public final class Vm {
 
     public DataStackElement getVar (String varName) {				    
 	int hc = varName.hashCode ();
-	DataStackElement elem = vars.get (hc);
-	if (elem == null) {
-	    if (parentVm != null) {
-		return parentVm.getVar (varName);
-	    }
-	}
-	return elem;
+	return getVar (hc);
     }
 
     // Sets the compilation mode.  If this is true, tokens are
@@ -662,6 +656,16 @@ public final class Vm {
         return spawned;
     }
 
+    private DataStackElement getVar (int id) {
+	DataStackElement elem = vars.get (id);
+	if (elem == null) {
+	    if (parentVm != null) {
+		return parentVm.getVar (id);
+	    }
+	}
+	return elem;	
+    }
+
     // Updates the mapping of a variable.  If the variable is mapped in
     // the parent virtual machine, that is updated. 
 
@@ -737,8 +741,6 @@ public final class Vm {
 	stringTable = null;
 	numberTable.clear ();
 	numberTable = null;
-	vmTable.clear ();
-	vmTable = null;
     }
 
     // Stops the process controller. 
@@ -771,14 +773,10 @@ public final class Vm {
     // If `varId' represents a variable, pushes its value to the stack.  
     // If it represents a named block, executes the block. 
 
-    private boolean executeVar (int varId) throws VmException {		    
-	DataStackElement var = vars.get (varId);
+    private boolean executeVar (int varId) throws VmException {
+	DataStackElement var = getVar (varId);
 	if (var == null) {
-	    if (parentVm != null) {
-		return parentVm.executeVar (varId);
-	    } else {
-		return false;
-	    }
+	    return false;
 	}
 
 	if (var.getType () == ByteCode.Type.VM) {
@@ -839,6 +837,7 @@ public final class Vm {
     // Otherwise, the byte code is executed. 
 
     private void executeToken (String token) throws VmException {
+	currentToken = token;
 	int hc = token.hashCode ();
 	if (hc == BLOCK_START || hc == BLOCK_START_NEW_STACK) {
 	    if (hc == BLOCK_START) {
@@ -946,7 +945,7 @@ public final class Vm {
 
     // Adds a vm to the child vm table. 
 
-    private int internVm (Vm vm) {
+    private synchronized int internVm (Vm vm) {	
 	if (childVmCount >= (Integer.MAX_VALUE - 1))
 	    childVmCount = 0;
 	int hc = childVmCount++;
@@ -1044,14 +1043,18 @@ public final class Vm {
 	new Hashtable<Integer, String> ();
     private Hashtable<Integer, Number> numberTable = 
 	new Hashtable<Integer, Number> (); 
-    private Hashtable<Integer, Vm> vmTable = new Hashtable<Integer, Vm> ();
     private Vm parentVm = null;
-    private int childVmCount = 0;
     private Hashtable<Integer, DataStackElement> vars = 
 	new Hashtable<Integer, DataStackElement> ();
     private ProcessController procController = null;
     private int procId = 0;
     private Stack<Vm> vmStack = null;
+    private String currentToken = null;
+
+    // Child virtual machine's table is global.
+    private static Hashtable<Integer, Vm> vmTable = 
+	new Hashtable<Integer, Vm> ();
+    private static int childVmCount = 0;
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();
