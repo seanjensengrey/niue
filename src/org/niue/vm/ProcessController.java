@@ -85,6 +85,7 @@ public final class ProcessController extends Thread {
                 parent.writeLine (ex.getMessage () + " in process " + vm);
             }
             vm.getNiue ().removeProcess (vm.getProcId ());
+	    vm.getParentVm ().discardChildVm (vm.getVmId ());
         }
 
         private Vm vm = null;

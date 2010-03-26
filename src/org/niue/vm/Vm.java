@@ -28,6 +28,7 @@ package org.niue.vm;
 import java.util.Stack;
 import java.util.EmptyStackException;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
@@ -505,7 +506,7 @@ public final class Vm {
 	    vm.dataStack = this.dataStack;
 	}
 	vm.run ();
-	if (discard && parentVm == null) {
+	if (discard) {
 	    discardChildVm (vm, vmId);
 	}
     }
@@ -514,9 +515,15 @@ public final class Vm {
 
     public void discardChildVm (int vmId) {
 	Vm vm = vmTable.get (vmId);
-	if (parentVm == null) {
-	    discardChildVm (vm, vmId);
-	}
+	discardChildVm (vm, vmId);	
+    }
+
+    // Returns the id to which this virtual machine is mapped
+    // in the vmTable.  Not valid for the root virtual machine
+    // which is not mapped.
+
+    public int getVmId () {
+	return virtualMachineId;
     }
 
     // Adds a variable mapping.  A child, if not running as a different
@@ -684,7 +691,6 @@ public final class Vm {
     // Removes a variable from the table, including its interned value. 
 
     private void removeVar (int hc, DataStackElement var) {
-	vars.remove (hc);
 	switch (var.getType ()) {
 	case BOOLEAN:
 	case INTEGER:
@@ -697,19 +703,50 @@ public final class Vm {
 	    numberTable.remove (hc);
 	    break;
 	case VM:
-	    vmTable.remove (hc);
+	    findAndRemoveChildVm (hc);
 	    break;	 
 	}
+	vars.remove (hc);
     }
 
     // Removes a child virtual machine from the table. 
 
     private void discardChildVm (Vm vm, int vmId) {
-	if (!vmIsCopy (vm)) {
-	    vm.cleanup ();
-	    vmTable.remove (vmId);
+	if (parentVm == null && vm.parentVm == this) {
+	    if (!vmIsCopy (vm)) {
+		removeChildVm (vm, vmId);
+	    }
 	}
     }
+
+    // Removes a virtual machine associated with a variable. 
+
+    private void findAndRemoveChildVm (int hc) {
+	DataStackElement elem = vars.get (hc);
+	if (elem != null && elem.getType () == ByteCode.Type.VM) {
+	    int vmId = elem.getElement ();
+	    removeChildVm (vmId);
+	}
+    }
+
+    // Do the actual removal of the vm from the table. 
+
+    private void removeChildVm (int vmId) {
+	removeChildVm (vmTable.get (vmId), vmId);
+    }
+
+    // First removes all child vms of `vm', then remove `vm' itself
+    // from the table.
+
+    private void removeChildVm (Vm vm, int vmId) {
+	if (vm != null) {
+	    for (Integer id : vm.childVmIds) {
+		removeChildVm (id);
+	    }
+	}
+	vm.cleanup ();
+	vmTable.remove (vmId);
+    }    
 
     // Returns true if the vm object references another vm in the
     // data stack.
@@ -948,9 +985,11 @@ public final class Vm {
     private synchronized int internVm (Vm vm) {	
 	if (childVmCount >= (Integer.MAX_VALUE - 1))
 	    childVmCount = 0;
-	int hc = childVmCount++;
-	vmTable.put (hc, vm);
-	return hc;
+	int vmId = childVmCount++;
+	vm.virtualMachineId = vmId;
+	vmTable.put (vmId, vm);
+	childVmIds.add (vmId);
+	return vmId;
     }
 
     // Pushes an already interned virtual machine to the stack. 
@@ -1048,8 +1087,10 @@ public final class Vm {
 	new Hashtable<Integer, DataStackElement> ();
     private ProcessController procController = null;
     private int procId = 0;
+    private int virtualMachineId = 0;
     private Stack<Vm> vmStack = null;
     private String currentToken = null;
+    private ArrayList<Integer> childVmIds = new ArrayList<Integer> ();
 
     // Child virtual machine's table is global.
     private static Hashtable<Integer, Vm> vmTable = 
