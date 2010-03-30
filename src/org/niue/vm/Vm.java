@@ -232,7 +232,7 @@ public final class Vm {
     // Pushes a raw element to the data stack. 
 
     public void push (DataStackElement elem) {
-        dataStack.push (elem);
+	dataStack.push (elem);
     }
 
     public void syncedPush (DataStackElement elem) {
@@ -771,13 +771,8 @@ public final class Vm {
 
     private void cleanup () {
         stopProcessController ();
-	dataStack = null;
 	vars.clear ();
 	vars = null;	
-	stringTable.clear ();
-	stringTable = null;
-	numberTable.clear ();
-	numberTable = null;
     }
 
     // Stops the process controller. 
@@ -843,11 +838,6 @@ public final class Vm {
 
     private String getString (int hc) throws VmException {
 	String s = stringTable.get (hc);
-	if (s == null) {
-	    if (parentVm != null) {
-		s = parentVm.getString (hc);
-	    }
-	}
 	if (s == null)
 	    throw new VmException ("String was not interned.");
 	return s;
@@ -1078,10 +1068,6 @@ public final class Vm {
     private boolean hasNewStack = false;
     private PrintStream out = null;
     private Hashtable<Integer, IVmOperation> vmOperations = null;
-    private Hashtable<Integer, String> stringTable = 
-	new Hashtable<Integer, String> ();
-    private Hashtable<Integer, Number> numberTable = 
-	new Hashtable<Integer, Number> (); 
     private Vm parentVm = null;
     private Hashtable<Integer, DataStackElement> vars = 
 	new Hashtable<Integer, DataStackElement> ();
@@ -1092,10 +1078,14 @@ public final class Vm {
     private String currentToken = null;
     private ArrayList<Integer> childVmIds = new ArrayList<Integer> ();
 
-    // Child virtual machine's table is global.
+    // Global tables.
     private static Hashtable<Integer, Vm> vmTable = 
 	new Hashtable<Integer, Vm> ();
     private static int childVmCount = 0;
+    private static Hashtable<Integer, String> stringTable = 
+	new Hashtable<Integer, String> ();
+    private static Hashtable<Integer, Number> numberTable = 
+	new Hashtable<Integer, Number> (); 
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();
