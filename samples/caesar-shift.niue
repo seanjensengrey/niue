@@ -1,0 +1,27 @@
+( an implementation of the Caesar Cipher 
+  (http://en.wikipedia.org/wiki/Caesar_cipher) )
+
+"=> caesar-shift.niue" . newline
+
+'abcdefghijklmnopqrstuvwxyz 'alpha ;
+26 'alphcount ;
+3 'shift ;
+
+[ 'flag ; 's ; 
+  s str-len 'len ;
+  ""
+  [ dup 1 + s rot rot substring 
+    alpha str-find
+    shift flag [ + dup alphcount >= [ alphcount - ] when ] if 
+               [ - dup     0 < [ alphcount + ] when ] else 
+    alpha swap str-at + 
+    ] len times ] 'cipher ;
+
+[ true cipher ] 'encode ;
+[ false cipher ] 'decode ;
+
+( tests )
+'hello encode .s ( => khoor ) decode . ( => hello )
+'xyzabc encode .s ( => abcdef ) decode . ( => xyzabc )
+
+newline

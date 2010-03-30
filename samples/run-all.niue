@@ -1,13 +1,13 @@
 "--- Niue tests and samples ---" . newline
 
-"factorial.niue" load newline
-"lists.niue" load newline
-"person-obj.niue" load newline
-"cond.niue" load newline
-"loops.niue" load newline
-"fizzbuzz.niue" load newline
-"substring.niue" load newline
-"factors.niue" load newline
-"spawn.niue" load newline
-
-newline
+"factorial.niue" load
+"lists.niue" load
+"person-obj.niue" load
+"cond.niue" load
+"loops.niue" load
+"fizzbuzz.niue" load
+"substring.niue" load
+"factors.niue" load
+"caesar-shift.niue" load
+"sum-of-squares.niue" load
+"spawn.niue" load

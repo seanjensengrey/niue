@@ -1,0 +1,16 @@
+( find the sum of the first n squares using the formula: 
+  n(n + 1)(2n + 1) / 6 )
+
+"=> sum-of-squares.niue" . newline
+
+[ 2 * ] 'double ;
+[ 1 + ] 'add1 ;
+[ 'n ; 
+  n add1 n double add1 * n * 6 / ] 'sum-of-squares ;
+
+( test )
+5 sum-of-squares ( => 55 ) .
+( sum-of-squares applied to all numbers from 0 -> 100 )
+[ sum-of-squares . ] 100 times
+
+newline
