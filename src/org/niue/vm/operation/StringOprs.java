@@ -55,7 +55,9 @@ public final class StringOprs implements IVmOperation {
 	    {
 		int idx = vm.popInteger ();
 		str1 = vm.popString ();
-		vm.pushInteger (Character.getNumericValue (str1.charAt (idx)));
+		char c[] = new char[1];
+		c[0] = str1.charAt (idx);
+		vm.pushString (new String (c));
 		break;
 	    }
 	case STR_EQ:
