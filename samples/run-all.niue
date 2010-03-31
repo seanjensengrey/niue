@@ -2,7 +2,6 @@
 
 "factorial.niue" load
 "lists.niue" load
-"person-obj.niue" load
 "cond.niue" load
 "loops.niue" load
 "fizzbuzz.niue" load
