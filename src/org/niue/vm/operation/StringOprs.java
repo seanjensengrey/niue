@@ -111,7 +111,8 @@ public final class StringOprs implements IVmOperation {
             }
 	case STR_FIND:
 	    {
-		String findStr = vm.popString ();
+		String findStr = str1;
+		str1 = vm.popString ();
 		vm.pushInteger (str1.indexOf (findStr));
 		break;
 	    }

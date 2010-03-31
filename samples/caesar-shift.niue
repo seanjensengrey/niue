@@ -11,7 +11,7 @@
   s str-len 'len ;
   ""
   [ dup 1 + s rot rot substring 
-    alpha str-find
+    alpha swap str-find
     shift flag [ + dup alphcount >= [ alphcount - ] when ] if 
                [ - dup     0 < [ alphcount + ] when ] else 
     alpha swap str-at + 

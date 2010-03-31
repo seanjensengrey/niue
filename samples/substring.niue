@@ -17,7 +17,7 @@ s n len substring . ( => cdefgh ) newline
 s 0 len 1 - substring . ( => abcdefg ) newline
 
 ( starting from a known character within the string and of m length )
-s 'b s str-find dup m + substring . ( => bcd ) newline
+s s 'b str-find dup m + substring . ( => bcd ) newline
 
 ( starting from a known substring within the string and of m length )
-s 'bc s str-find dup m + substring . ( => bcd ) newline
+s s 'bc str-find dup m + substring . ( => bcd ) newline
