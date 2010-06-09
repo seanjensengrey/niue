@@ -645,7 +645,7 @@ public final class Vm {
 	InputStream is = new ByteArrayInputStream (code.getBytes 
 						   (Charset.forName ("UTF-8")));
 	try {
-	    niue.run (this, is);
+	    niue.run (this, is, out);
 	} catch (VmException ex) {
 	    throw ex;
 	} finally {
