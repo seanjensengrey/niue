@@ -229,6 +229,39 @@ public final class Vm {
 	return (elem.getElement () == 1 ? true : false);
     }
 
+    // Pops an element from the data stack, which should represent
+    // a BigInteger.
+
+    public BigInteger popBigInteger () throws VmException {
+	DataStackElement elem = pop ();
+	if (elem.getType () != ByteCode.Type.BIGINTEGER) {
+	    VmException.raiseUnexpectedValueOnStack ();
+	}
+	return (BigInteger) getNumber (elem.getElement ());
+    }
+
+    // Pops an element from the data stack, which should represent
+    // a Double.
+
+    public Double popDouble () throws VmException {
+	DataStackElement elem = pop ();
+	if (elem.getType () != ByteCode.Type.DOUBLE) {
+	    VmException.raiseUnexpectedValueOnStack ();
+	}
+	return (Double) getNumber (elem.getElement ());
+    }
+
+    // Pops an element from the data stack, which should represent
+    // a generic Object.
+
+    public Object popObject () throws VmException {
+	DataStackElement elem = pop ();
+	if (elem.getType () != ByteCode.Type.OBJECT) {
+	    VmException.raiseUnexpectedValueOnStack ();
+	}
+	return getObject (elem.getElement ());
+    }
+
     // Pushes a raw element to the data stack. 
 
     public void push (DataStackElement elem) {
@@ -253,6 +286,17 @@ public final class Vm {
                 throw new VmException (EMPTY_STACK_MSG);
             }
 	}
+    }
+
+    // Returns the top element of the data stack, without
+    // removing it. 
+
+    public DataStackElement top () throws VmException {
+        int sz = dataStack.size ();
+        if (sz == 0) {
+            throw new VmException (EMPTY_STACK_MSG);
+        }
+        return dataStack.get (sz - 1);
     }
 
     // Pops a raw element from the data stack.  Does not
@@ -344,6 +388,8 @@ public final class Vm {
 	    return getNumber (elem.getElement ()).toString ();
 	case STRING:
 	    return getString (elem.getElement ());
+        case OBJECT:
+            return getObject (elem.getElement ()).toString ();
 	case VM:
 	    return getVm (elem.getElement ()).toString ();
 	}
@@ -433,6 +479,13 @@ public final class Vm {
 	else
 	    hc = str.hashCode ();
 	push (hc, ByteCode.Type.STRING);
+    }
+
+    // Pushes and interns an Object.  
+
+    public void pushObject (Object obj) {
+        int hc = internObject (obj);
+        push (hc, ByteCode.Type.OBJECT);
     }
 
     // Executes a byte code.  Words are executed and values are
@@ -698,6 +751,9 @@ public final class Vm {
 	case STRING:
 	    stringTable.remove (hc);
 	    break;
+        case OBJECT:
+            objectTable.remove (hc);
+            break;
 	case BIGINTEGER:
 	case DOUBLE:
 	    numberTable.remove (hc);
@@ -832,10 +888,7 @@ public final class Vm {
     }    
 
     // Returns the string identified by `hc' from the string table. 
-    // If the string is not interned in the current virtual machine, 
-    // its parents are searched.  An exception is thrown is the string
-    // was not interned in the virtual machine or any of its parents. 
-
+    
     private String getString (int hc) throws VmException {
 	String s = stringTable.get (hc);
 	if (s == null)
@@ -844,7 +897,7 @@ public final class Vm {
     }
 
     // Returns a big integer or double from the number table. 
-    // The behavior of this method is the same as that of getString (hc). 
+    // If the number is not found, the parent vms are also searched. 
 
     private Number getNumber (int hc) throws VmException {
 	Number n = numberTable.get (hc);
@@ -856,6 +909,21 @@ public final class Vm {
 	if (n == null)
 	    throw new VmException ("Number was not interned.");
 	return n;
+    }
+
+    // Returns the Object identified by `objId' from the Object table. 
+
+    private Object getObject (int objId) throws VmException {
+        Object obj = objectTable.get (objId);
+        if (obj == null) {
+	    if (parentVm != null) {
+		obj = parentVm.getNumber (objId);
+	    }
+        }
+        if (obj == null) {
+            throw new VmException ("Object was not interned.");
+        }
+        return obj;
     }
 
     // Compiles a string token to its byte code representation.  
@@ -956,6 +1024,16 @@ public final class Vm {
 		parentVm.internString (s);
 	}
 	return hc;
+    }
+
+    // Adds an Object to the objectTable.  
+
+    private int internObject (Object obj) {
+        if (objectId >= Integer.MAX_VALUE)
+            objectId = 0;
+        ++objectId;
+        objectTable.put (objectId, obj);
+        return objectId;
     }
 
     // Adds number to number table. 
@@ -1077,6 +1155,7 @@ public final class Vm {
     private Stack<Vm> vmStack = null;
     private String currentToken = null;
     private ArrayList<Integer> childVmIds = new ArrayList<Integer> ();
+    private int objectId = 0;
 
     // Global tables.
     private static Hashtable<Integer, Vm> vmTable = 
@@ -1086,6 +1165,8 @@ public final class Vm {
 	new Hashtable<Integer, String> ();
     private static Hashtable<Integer, Number> numberTable = 
 	new Hashtable<Integer, Number> (); 
+    private static Hashtable<Integer, Object> objectTable =
+        new Hashtable<Integer, Object> ();
 
     public static final String EMPTY_STACK_MSG = "<empty-stack>";
     static final int COLON_DEF = ":".hashCode ();

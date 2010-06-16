@@ -23,31 +23,34 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.niue.vm;
+package org.niue.vm.operation;
 
-// Represents a compiled byte code. 
+import org.niue.vm.IVmOperation;
+import org.niue.vm.Vm;
+import org.niue.vm.VmException;
+import org.niue.vm.DataStackElement;
+import org.niue.vm.ByteCode;
 
-public final class ByteCode {
+// Pops a string identifier which should be a class name. 
+// Initializes an instance of the class and pushes it to
+// the stack.  
+
+public final class New implements IVmOperation {
     
-    public enum Type { BOOLEAN, INTEGER, BIGINTEGER, DOUBLE, STRING, 
-	    WORD, VM, IF, OBJECT };
-    
-    public Type type;
-    public int code;
-
-    public ByteCode () {
-	type = Type.BOOLEAN;
-	code = 0;
-    }
-
-    public ByteCode (Type type, int code) {
-	this.type = type;
-	this.code = code;
-    }
-
-    public String toString () {
-	StringBuilder sb = new StringBuilder ();
-	sb.append ("type=").append (type).append (", code").append (code);
-	return sb.toString ();
+    public void execute (Vm vm) throws VmException {
+	String className = vm.popString ();
+        try {
+            Class cls = Class.forName (className);
+            Object obj = cls.newInstance ();
+            vm.pushObject (obj);
+        } catch (ClassNotFoundException ex) {
+            throw new VmException ("ClassNotFoundException. " + ex.getMessage ());
+        }
+        catch (InstantiationException ex) {
+            throw new VmException ("InstantiationException. " + ex.getMessage ());
+        }
+        catch (IllegalAccessException ex) {
+            throw new VmException ("IllegalAccessException. " + ex.getMessage ());
+        }
     }
 }

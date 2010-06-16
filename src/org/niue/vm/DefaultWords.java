@@ -159,6 +159,10 @@ final class DefaultWords {
 	    vmOperations.put (SORT, new ListOprs (ListOprs.Operator.SORT));
 	    vmOperations.put (REPLACE, new ListOprs (ListOprs.Operator.REPLACE));
 	    vmOperations.put (REPLACE_ALL, new ListOprs (ListOprs.Operator.REPLACE_ALL));
+
+            // Objects and reflection
+            vmOperations.put (NEW, new New ());
+            vmOperations.put (INVOKE_METHOD, new InvokeMethod ());
         }
         return (Hashtable<Integer, IVmOperation>) vmOperations.clone ();
     }
@@ -260,6 +264,10 @@ final class DefaultWords {
     static final int SORT = "sort".hashCode ();
     static final int REPLACE = "replace".hashCode ();
     static final int REPLACE_ALL = "replace-all".hashCode ();
+
+    // Reflection and Objects
+    static final int NEW = "new".hashCode ();
+    static final int INVOKE_METHOD = "@".hashCode ();
 
     private static Hashtable<Integer, IVmOperation> vmOperations = null;
 }
