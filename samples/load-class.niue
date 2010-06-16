@@ -1,0 +1,8 @@
+( demostrates loading a Java class and invoking a method on it ) 
+
+'java.lang.StringBuffer new 'sb ;
+'hello sb 'append @ ,
+sb . ( => hello )
+newline
+" world" sb 'append @ ,
+sb . ( => hello world )

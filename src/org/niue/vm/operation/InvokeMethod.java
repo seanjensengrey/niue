@@ -39,15 +39,6 @@ import org.niue.vm.ByteCode;
 // the Object with the rest of the elements on the stack being
 // arguments.  Any return value, is pushed to the stack. 
 
-// Sample usage from a Niue REPL:
-// > 'java.lang.StringBuffer new 'sb ;
-// > 'hello sb 'append @
-// > sb .
-//   hello
-// > 'world sb 'append @
-// > sb .
-//   helloworld
-
 public final class InvokeMethod implements IVmOperation {
     
     public void execute (Vm vm) throws VmException {
