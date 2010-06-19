@@ -57,8 +57,13 @@ public final class ProcessController extends Thread {
     public void run () {
         executors = Executors.newCachedThreadPool ();
         Vm vm = null;
-        while ((vm = vms.poll ()) != null) {
-            executors.execute (new ExecuteVm (vm));
+        stopPolling = false;
+        while (!stopPolling) {
+            if ((vm = vms.poll ()) != null) {
+                executors.execute (new ExecuteVm (vm));
+            } else {
+                this.yield ();
+            }
         }
     }
 
@@ -67,6 +72,7 @@ public final class ProcessController extends Thread {
     public void shutdown () {
         if (executors != null)
             executors.shutdownNow ();
+        stopPolling = true;
     }
     
     // Callback for the executor. 
@@ -93,8 +99,8 @@ public final class ProcessController extends Thread {
 
     private Vm parent = null;
     private boolean started = false;
-    private LinkedList<Vm> vms = new LinkedList<Vm> ();    
+    private volatile LinkedList<Vm> vms = new LinkedList<Vm> ();    
     private ExecutorService executors = null;
-    private static final int BYTE_CODES_TO_RUN = 10;
+    private volatile boolean stopPolling = false;
 }
 
