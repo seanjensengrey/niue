@@ -73,7 +73,7 @@ public final class InvokeMethod implements IVmOperation {
     private static ArgInfo constructArgumetTypes (Vm vm) throws VmException {
         int argc = vm.getDataStack ().size ();
         if (argc == 0)
-            return null;
+            return new ArgInfo (null, null);
         Class[] types = new Class[argc];
         Object[] args = new Object[argc];
         for (int i = 0; i < argc; ++i) {
