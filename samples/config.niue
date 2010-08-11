@@ -1,0 +1,10 @@
+( how Niue can be used in simple configuration files )
+( see ConfigTest.java on how to use this configuration )
+
+[ swap props 'setProperty @ ] ', ;
+
+'java.util.Properties new 'props ;
+'DB-NAME 'server1 ,
+'PORT '5678 ,
+props ( the invoking Java application can get this by calling vm.popObject() )
+
